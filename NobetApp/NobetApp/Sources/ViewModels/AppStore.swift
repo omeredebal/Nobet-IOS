@@ -11,51 +11,48 @@ import LocalAuthentication
 final class AppStore {
 
     // MARK: Auth / User
-    var isLoggedIn: Bool {
-        get { UserDefaults.standard.bool(forKey: "is_logged_in") }
-        set { UserDefaults.standard.set(newValue, forKey: "is_logged_in") }
+    var isLoggedIn: Bool = UserDefaults.standard.bool(forKey: "is_logged_in") {
+        didSet { UserDefaults.standard.set(isLoggedIn, forKey: "is_logged_in") }
     }
 
-    var userEmail: String {
-        get { UserDefaults.standard.string(forKey: "user_email") ?? "" }
-        set { UserDefaults.standard.set(newValue, forKey: "user_email") }
+    var userEmail: String = UserDefaults.standard.string(forKey: "user_email") ?? "" {
+        didSet { UserDefaults.standard.set(userEmail, forKey: "user_email") }
     }
 
-    var userRole: UserRole {
-        get { UserRole(rawValue: UserDefaults.standard.string(forKey: "user_role") ?? "") ?? .asistan }
-        set { UserDefaults.standard.set(newValue.rawValue, forKey: "user_role") }
+    var userRole: UserRole = UserRole(rawValue: UserDefaults.standard.string(forKey: "user_role") ?? "") ?? .asistan {
+        didSet { UserDefaults.standard.set(userRole.rawValue, forKey: "user_role") }
     }
 
-    var retentionHours: Int {
-        get { UserDefaults.standard.integer(forKey: "retention_hours") == 0 ? 24 : UserDefaults.standard.integer(forKey: "retention_hours") }
-        set { UserDefaults.standard.set(newValue, forKey: "retention_hours") }
+    var retentionHours: Int = {
+        let h = UserDefaults.standard.integer(forKey: "retention_hours")
+        return h == 0 ? 24 : h
+    }() {
+        didSet { UserDefaults.standard.set(retentionHours, forKey: "retention_hours") }
     }
 
     // MARK: Team & Invite
-    var teamName: String {
-        get { UserDefaults.standard.string(forKey: "team_name") ?? "Acil Servis Nöbet Ekibi" }
-        set { UserDefaults.standard.set(newValue, forKey: "team_name") }
+    var teamName: String = UserDefaults.standard.string(forKey: "team_name") ?? "Acil Servis Nöbet Ekibi" {
+        didSet { UserDefaults.standard.set(teamName, forKey: "team_name") }
     }
 
-    var teamDepartment: String {
-        get { UserDefaults.standard.string(forKey: "team_department") ?? "Acil Tıp Kliniği" }
-        set { UserDefaults.standard.set(newValue, forKey: "team_department") }
+    var teamDepartment: String = UserDefaults.standard.string(forKey: "team_department") ?? "Acil Tıp Kliniği" {
+        didSet { UserDefaults.standard.set(teamDepartment, forKey: "team_department") }
     }
 
-    var inviteCode: String {
-        get {
-            if let c = UserDefaults.standard.string(forKey: "invite_code") { return c }
-            let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-            let code  = "NBT-" + String((0..<4).map { _ in chars.randomElement()! })
-            UserDefaults.standard.set(code, forKey: "invite_code")
-            return code
-        }
+    var inviteCode: String = {
+        if let c = UserDefaults.standard.string(forKey: "invite_code") { return c }
+        let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        let code  = "NBT-" + String((0..<4).map { _ in chars.randomElement()! })
+        UserDefaults.standard.set(code, forKey: "invite_code")
+        return code
+    }() {
+        didSet { UserDefaults.standard.set(inviteCode, forKey: "invite_code") }
     }
 
     func regenerateInviteCode(ctx: ModelContext) -> String {
         let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
         let code  = "NBT-" + String((0..<4).map { _ in chars.randomElement()! })
-        UserDefaults.standard.set(code, forKey: "invite_code")
+        inviteCode = code
         ctx.insert(AuditEntry(message: "Ekip davet kodu yenilendi: \(code)"))
         return code
     }
@@ -74,7 +71,7 @@ final class AppStore {
         guard !cleanCode.isEmpty else { return false }
         
         let formatted = cleanCode.hasPrefix("NBT-") ? cleanCode : "NBT-\(cleanCode)"
-        UserDefaults.standard.set(formatted, forKey: "invite_code")
+        inviteCode = formatted
         
         let trimmedName = userName.trimmingCharacters(in: .whitespaces)
         let finalName = trimmedName.isEmpty ? (userEmail.isEmpty ? "Dr. Hekim" : userEmail) : trimmedName
@@ -107,8 +104,7 @@ final class AppStore {
         teamName = "Ekip Yok (Bağlantısız)"
         teamDepartment = "Klinik Seçilmedi"
         let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-        let code = "NBT-" + String((0..<4).map { _ in chars.randomElement()! })
-        UserDefaults.standard.set(code, forKey: "invite_code")
+        inviteCode = "NBT-" + String((0..<4).map { _ in chars.randomElement()! })
 
         ctx.insert(AuditEntry(message: "\(userName), \(oldTeam) ekibinden ayrıldı"))
         try? ctx.save()
@@ -116,32 +112,28 @@ final class AppStore {
 
 
     // MARK: Security & Biometrics
-    var isBiometricsEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: "biometrics_enabled") }
-        set { UserDefaults.standard.set(newValue, forKey: "biometrics_enabled") }
+    var isBiometricsEnabled: Bool = UserDefaults.standard.bool(forKey: "biometrics_enabled") {
+        didSet { UserDefaults.standard.set(isBiometricsEnabled, forKey: "biometrics_enabled") }
     }
 
     var isUnlocked: Bool = true
 
     // MARK: Duty Days
-    var dutyDays: Set<Int> {
-        get {
-            let arr = UserDefaults.standard.array(forKey: "duty_days") as? [Int] ?? [0, 3]
-            return Set(arr)
-        }
-        set {
-            UserDefaults.standard.set(Array(newValue), forKey: "duty_days")
+    var dutyDays: Set<Int> = {
+        let arr = UserDefaults.standard.array(forKey: "duty_days") as? [Int] ?? [0, 3]
+        return Set(arr)
+    }() {
+        didSet {
+            UserDefaults.standard.set(Array(dutyDays), forKey: "duty_days")
         }
     }
 
     func toggleDutyDay(_ dayIndex: Int) {
-        var days = dutyDays
-        if days.contains(dayIndex) {
-            days.remove(dayIndex)
+        if dutyDays.contains(dayIndex) {
+            dutyDays.remove(dayIndex)
         } else {
-            days.insert(dayIndex)
+            dutyDays.insert(dayIndex)
         }
-        dutyDays = days
     }
 
     // MARK: Navigation
