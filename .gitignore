@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+*/.DS_Store
+*/**/.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+project.xcworkspace/xcuserdata/
+*.xcuserdatad
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.ipa
+*.app.dSYM.zip
+*.dSYM

@@ -1,0 +1,447 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AABB000000000000AABB0035 /* NobetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0015 /* NobetApp.swift */; };
+		AABB000000000000AABB0036 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0016 /* ContentView.swift */; };
+		AABB000000000000AABB0037 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0017 /* Models.swift */; };
+		AABB000000000000AABB0038 /* HandoverState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0018 /* HandoverState.swift */; };
+		AABB000000000000AABB0039 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0019 /* AppStore.swift */; };
+		AABB000000000000AABB0040 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0020 /* NotificationManager.swift */; };
+		AABB000000000000AABB0041 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0021 /* DesignSystem.swift */; };
+		AABB000000000000AABB0042 /* PatientCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0022 /* PatientCardView.swift */; };
+		AABB000000000000AABB0043 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0023 /* LoginView.swift */; };
+		AABB000000000000AABB0044 /* PanoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0024 /* PanoView.swift */; };
+		AABB000000000000AABB0045 /* PatientDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0025 /* PatientDetailView.swift */; };
+		AABB000000000000AABB0046 /* AddPatientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0026 /* AddPatientView.swift */; };
+		AABB000000000000AABB0047 /* PrepareHandoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0027 /* PrepareHandoverView.swift */; };
+		AABB000000000000AABB0048 /* ReceiveHandoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0028 /* ReceiveHandoverView.swift */; };
+		AABB000000000000AABB0049 /* ClinicalScoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0029 /* ClinicalScoresView.swift */; };
+		AABB000000000000AABB0050 /* TeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0030 /* TeamView.swift */; };
+		AABB000000000000AABB0051 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0031 /* ProfileView.swift */; };
+		AABB000000000000AABB0052 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0032 /* Assets.xcassets */; };
+		AABB000000000000AABB0053 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000AABB0034 /* Preview Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AABB000000000000AABB0015 /* NobetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NobetApp.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0016 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0017 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0018 /* HandoverState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandoverState.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0019 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0020 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0021 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0022 /* PatientCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientCardView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0023 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0024 /* PanoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanoView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0025 /* PatientDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientDetailView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0026 /* AddPatientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPatientView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0027 /* PrepareHandoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepareHandoverView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0028 /* ReceiveHandoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveHandoverView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0029 /* ClinicalScoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClinicalScoresView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0030 /* TeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0031 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		AABB000000000000AABB0032 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AABB000000000000AABB0033 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AABB000000000000AABB0034 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AABB000000000000AABB0060 /* NobetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NobetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AABB000000000000AABB0007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AABB000000000000AABB0002 /* NobetApp */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0015 /* NobetApp.swift */,
+				AABB000000000000AABB0016 /* ContentView.swift */,
+				AABB000000000000AABB0009 /* Sources */,
+				AABB000000000000AABB0032 /* Assets.xcassets */,
+				AABB000000000000AABB0033 /* Info.plist */,
+				AABB000000000000AABB0014 /* Preview Content */,
+			);
+			path = NobetApp;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0060 /* NobetApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0008 /* MainGroup */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0002 /* NobetApp */,
+				AABB000000000000AABB0003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0009 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0010 /* Models */,
+				AABB000000000000AABB0011 /* ViewModels */,
+				AABB000000000000AABB0012 /* Views */,
+				AABB000000000000AABB0013 /* Components */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0010 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0017 /* Models.swift */,
+				AABB000000000000AABB0018 /* HandoverState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0011 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0019 /* AppStore.swift */,
+				AABB000000000000AABB0020 /* NotificationManager.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0012 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0023 /* LoginView.swift */,
+				AABB000000000000AABB0024 /* PanoView.swift */,
+				AABB000000000000AABB0025 /* PatientDetailView.swift */,
+				AABB000000000000AABB0026 /* AddPatientView.swift */,
+				AABB000000000000AABB0027 /* PrepareHandoverView.swift */,
+				AABB000000000000AABB0028 /* ReceiveHandoverView.swift */,
+				AABB000000000000AABB0029 /* ClinicalScoresView.swift */,
+				AABB000000000000AABB0030 /* TeamView.swift */,
+				AABB000000000000AABB0031 /* ProfileView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0013 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0021 /* DesignSystem.swift */,
+				AABB000000000000AABB0022 /* PatientCardView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		AABB000000000000AABB0014 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000AABB0034 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AABB000000000000AABB0004 /* NobetApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AABB000000000000AABB0059 /* Build configuration list for PBXNativeTarget "NobetApp" */;
+			buildPhases = (
+				AABB000000000000AABB0005 /* Sources */,
+				AABB000000000000AABB0006 /* Resources */,
+				AABB000000000000AABB0007 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NobetApp;
+			productName = NobetApp;
+			productReference = AABB000000000000AABB0060 /* NobetApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AABB000000000000AABB0001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					AABB000000000000AABB0004 = {
+						CreatedOnToolsVersion = 16.3;
+						DevelopmentTeam = 3BV56Q32SD;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = AABB000000000000AABB0058 /* Build configuration list for PBXProject "NobetApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = tr;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				tr,
+				Base,
+			);
+			mainGroup = AABB000000000000AABB0008;
+			productRefGroup = AABB000000000000AABB0003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AABB000000000000AABB0004 /* NobetApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AABB000000000000AABB0006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AABB000000000000AABB0053 /* Preview Assets.xcassets in Resources */,
+				AABB000000000000AABB0052 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AABB000000000000AABB0005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AABB000000000000AABB0035 /* NobetApp.swift in Sources */,
+				AABB000000000000AABB0036 /* ContentView.swift in Sources */,
+				AABB000000000000AABB0037 /* Models.swift in Sources */,
+				AABB000000000000AABB0038 /* HandoverState.swift in Sources */,
+				AABB000000000000AABB0039 /* AppStore.swift in Sources */,
+				AABB000000000000AABB0040 /* NotificationManager.swift in Sources */,
+				AABB000000000000AABB0041 /* DesignSystem.swift in Sources */,
+				AABB000000000000AABB0042 /* PatientCardView.swift in Sources */,
+				AABB000000000000AABB0043 /* LoginView.swift in Sources */,
+				AABB000000000000AABB0044 /* PanoView.swift in Sources */,
+				AABB000000000000AABB0045 /* PatientDetailView.swift in Sources */,
+				AABB000000000000AABB0046 /* AddPatientView.swift in Sources */,
+				AABB000000000000AABB0047 /* PrepareHandoverView.swift in Sources */,
+				AABB000000000000AABB0048 /* ReceiveHandoverView.swift in Sources */,
+				AABB000000000000AABB0049 /* ClinicalScoresView.swift in Sources */,
+				AABB000000000000AABB0050 /* TeamView.swift in Sources */,
+				AABB000000000000AABB0051 /* ProfileView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AABB000000000000AABB0054 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AABB000000000000AABB0055 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AABB000000000000AABB0056 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"NobetApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 3BV56Q32SD;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NobetApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omeredebal.nobetapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AABB000000000000AABB0057 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"NobetApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 3BV56Q32SD;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NobetApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omeredebal.nobetapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AABB000000000000AABB0058 /* Build configuration list for PBXProject "NobetApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AABB000000000000AABB0054 /* Debug */,
+				AABB000000000000AABB0055 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AABB000000000000AABB0059 /* Build configuration list for PBXNativeTarget "NobetApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AABB000000000000AABB0056 /* Debug */,
+				AABB000000000000AABB0057 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AABB000000000000AABB0001 /* Project object */;
+}

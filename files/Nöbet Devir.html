@@ -1,0 +1,421 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nöbet Devir</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: tek sütun telefon uygulaması; masaüstünde ortalanmış 430px gövde. Üstte başlık, ortada kaydırılan içerik, altta sekme çubuğu. */
+:root{
+  --stage:#DCE3E7; --bg:#EEF2F4; --surface:#FFFFFF; --ink:#14242C; --muted:#586973; --line:#D3DBE0;
+  --accent:#0A6B73; --accent-ink:#FFFFFF; --accent-soft:#D9EEF0;
+  --ok:#25785A; --ok-soft:#DDF0E7; --warn:#8F5A00; --warn-soft:#FBEBC8; --bad:#B3302A; --bad-soft:#F9DEDB;
+  --font-display:'IBM Plex Sans Condensed','Arial Narrow',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage:#080D10; --bg:#0F171B; --surface:#172228; --ink:#E4EDF1; --muted:#93A5AE; --line:#27363E;
+    --accent:#4FC3CC; --accent-ink:#06262A; --accent-soft:#12363A;
+    --ok:#5CCB9B; --ok-soft:#153327; --warn:#E8B04A; --warn-soft:#3A2D10; --bad:#F08A82; --bad-soft:#40201E;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --stage:#080D10; --bg:#0F171B; --surface:#172228; --ink:#E4EDF1; --muted:#93A5AE; --line:#27363E;
+  --accent:#4FC3CC; --accent-ink:#06262A; --accent-soft:#12363A;
+  --ok:#5CCB9B; --ok-soft:#153327; --warn:#E8B04A; --warn-soft:#3A2D10; --bad:#F08A82; --bad-soft:#40201E;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--stage);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.stage{height:100%;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);min-width:0}
+@media (min-width:520px){.app{border-inline:1px solid var(--line)}}
+
+/* header */
+.top{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.top h1{margin:0;font-family:var(--font-display);font-weight:700;font-size:21px;letter-spacing:.01em;line-height:1.1;text-wrap:balance}
+.top .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.top .grow{flex:1;min-width:0}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);padding:4px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+
+/* main */
+main{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.demo-note{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+
+/* tab bar */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);padding-bottom:2px}
+.tab{background:none;border:0;padding:9px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);cursor:pointer}
+.tab[aria-current="page"]{color:var(--accent);font-weight:600}
+.actionbar{display:flex;gap:10px;padding:10px 16px;background:var(--surface);border-top:1px solid var(--line)}
+
+/* controls */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.block{width:100%}
+.btn.grow{flex:1}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+input[type=text],input[type=number],input[type=email],select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px;color:var(--ink);font-size:15px}
+textarea{min-height:84px;resize:vertical;line-height:1.4}
+.row{display:flex;gap:10px}
+.row>*{min-width:0;flex:1}
+.stack{display:flex;flex-direction:column;gap:12px}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+h2{margin:0;font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:.01em}
+
+/* severity */
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.unstable{background:var(--bad-soft);color:var(--bad)}
+.pill.watch{background:var(--warn-soft);color:var(--warn)}
+.pill.stable{background:var(--ok-soft);color:var(--ok)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 6px;font-weight:600;cursor:pointer;min-height:44px}
+.seg button[aria-pressed="true"].unstable{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.seg button[aria-pressed="true"].watch{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.seg button[aria-pressed="true"].stable{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+
+/* summary strip */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.strip .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.strip .n{font-family:var(--font-mono);font-size:24px;font-weight:500;line-height:1}
+.strip .cell.unstable .n{color:var(--bad)}.strip .cell.watch .n{color:var(--warn)}.strip .cell.stable .n{color:var(--ok)}
+.strip .l{font-size:12px;color:var(--muted)}
+
+/* patient card */
+.pt{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:auto 1fr;gap:12px;cursor:pointer}
+.bed{font-family:var(--font-mono);font-weight:500;font-size:20px;border:1.5px solid var(--ink);border-radius:8px;min-width:48px;height:48px;display:grid;place-items:center}
+.pt .meta{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pt .who{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.pt .prob{font-weight:600;margin:3px 0 6px;text-wrap:balance}
+.pt .foot{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.foot .late{color:var(--bad);font-weight:600}
+.foot span{display:inline-flex;gap:5px;align-items:center}
+
+/* ipass blocks */
+.ip{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.ip .k{font-family:var(--font-mono);font-weight:500;width:28px;height:28px;border-radius:7px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:14px}
+.ip .t{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:6px 0;cursor:pointer}
+.chk .box{width:24px;height:24px;border:1.5px solid var(--muted);border-radius:7px;flex:none;display:grid;place-items:center;color:transparent;background:var(--surface);margin-top:1px}
+.chk[aria-checked="true"] .box{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chk[aria-checked="true"] .txt{text-decoration:line-through;color:var(--muted)}
+.chk{background:none;border:0;text-align:left;width:100%}
+.tm{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.tm:first-of-type{border-top:0}
+.tm .due{font-family:var(--font-mono);font-size:12px;color:var(--accent)}
+.tm .due.late{color:var(--bad);font-weight:500}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;min-height:32px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.warnbox{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13px;display:flex;gap:10px}
+.errbox{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:10px 12px;font-size:13px}
+.okbox{background:var(--ok-soft);color:var(--ok);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.mono{font-family:var(--font-mono)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.kv:first-child{border-top:0}
+.log{font-size:13px;display:grid;grid-template-columns:48px 1fr;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.log:first-child{border-top:0}
+.log time{font-family:var(--font-mono);color:var(--muted);font-size:12px}
+.score-big{font-family:var(--font-mono);font-size:34px;font-weight:500;line-height:1}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.week div{border:1px solid var(--line);border-radius:8px;padding:6px 0;font-size:12px;display:flex;flex-direction:column;gap:3px;background:var(--surface)}
+.week .on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.week b{font-family:var(--font-mono);font-weight:500;font-size:14px}
+.copy{display:flex;gap:8px;align-items:center}
+.code{font-family:var(--font-mono);font-size:18px;letter-spacing:.12em;border:1.5px dashed var(--muted);padding:8px 12px;border-radius:8px;user-select:all}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;z-index:9;max-width:90vw}
+.login{justify-content:center;flex:1}
+.login .mark{font-family:var(--font-display);font-weight:700;font-size:40px;line-height:1;letter-spacing:.01em}
+@media (prefers-reduced-motion:no-preference){.pt,.btn,.tab{transition:background .15s,border-color .15s}}
+</style>
+
+<div class="stage"><div class="app" id="app"></div></div>
+<div id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+var now=function(){return Date.now()};
+var M=60000;
+var ROLES=['Uzman','Asistan','Pratisyen','İntörn','Tıp öğrencisi'];
+var PHYS=['Uzman','Asistan','Pratisyen'];
+var SEV={unstable:'Kararsız',watch:'İzlemde',stable:'Stabil'};
+var ORDER={unstable:0,watch:1,stable:2};
+
+var ICONS={
+ list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+ calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>',
+ users:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5a3 3 0 010 6M18 14c1.8.7 3 2.4 3 4.5"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
+ back:'<path d="M15 5l-7 7 7 7"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ check:'<path d="M5 12l5 5 9-10"/>',
+ task:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/>',
+ send:'<path d="M4 12l16-8-6 16-3-7z"/>',
+ shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>'
+};
+function ic(n,s){s=s||20;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICONS[n]+'</svg>'}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var uid=0;function nid(){return 'x'+(++uid)}
+function hhmm(t){var d=new Date(t||now());return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+function dur(ms){var m=Math.round(ms/M);if(m===0)return 'şimdi';var a=Math.abs(m),h=Math.floor(a/60),mm=a%60;var s=(h?h+' sa ':'')+(mm||!h?mm+' dk':'');return m<0?s.trim()+' gecikti':s.trim()+' sonra'}
+
+var state={
+ loggedIn:true,tab:'pano',view:null,sel:null,
+ role:'Asistan',retention:24,
+ handover:{to:'Dr. Elif Kaya',status:'draft'},recvRole:'Asistan',
+ team:[{n:'Dr. Mert Aydın',r:'Uzman'},{n:'Dr. Elif Kaya',r:'Asistan'},{n:'Ayşe Demir',r:'İntörn'},{n:'Can Yıldız',r:'Tıp öğrencisi'}],
+ scores:{q:[false,false,false],c:[false,false,false,false,false],g:{e:4,v:5,m:6}},
+ audit:[{t:now()-95*M,x:'Nöbet başladı'},{t:now()-70*M,x:'A3 kartı oluşturuldu'}],
+ addErr:'',
+ patients:[
+  {id:nid(),bed:'A3',age:71,sex:'E',problem:'Akut koroner sendrom, PCI bekliyor',sev:'unstable',
+   summary:'Göğüs ağrısı ile geldi. EKG\'de inferior ST yükselmesi. Aspirin ve heparin başlandı. Kardiyoloji ve anjiyo ekibi bilgilendirildi.',
+   cont:'Hipotansiyon gelişirse sağ ventrikül tutulumunu düşün, nitratı kes, sıvı yükle ve kardiyolojiyi tekrar ara.',
+   tasks:[{id:nid(),x:'Kardiyoloji ile PCI saatini netleştir',d:false},{id:nid(),x:'Kontrol EKG çek',d:false}],
+   timers:[{id:nid(),x:'Vital bulgular',due:now()+20*M}],ack:false},
+  {id:nid(),bed:'B1',age:58,sex:'K',problem:'Pnömoni, CURB-65: 2',sev:'watch',
+   summary:'Ateş ve öksürük ile geldi. Akciğer grafisinde sağ alt lobda konsolidasyon. IV antibiyotik başlandı, kan kültürü alındı.',
+   cont:'SpO₂ %90 altına düşerse oksijeni artır ve yoğun bakım değerlendirmesi iste.',
+   tasks:[{id:nid(),x:'Kan kültürü sonucunu kontrol et',d:false}],
+   timers:[{id:nid(),x:'SpO₂ ve ateş kontrolü',due:now()+45*M}],ack:false},
+  {id:nid(),bed:'C2',age:79,sex:'K',problem:'Hafif kafa travması, antikoagülan kullanıyor',sev:'watch',
+   summary:'Düşme sonrası geldi. GKS 15. İlk BT\'de kanama yok. 6 saat gözlem planlandı.',
+   cont:'GKS düşerse, kusma veya yeni nörolojik bulgu olursa acil BT tekrarı iste.',
+   tasks:[{id:nid(),x:'Nörolojik muayeneyi tekrarla',d:false}],
+   timers:[{id:nid(),x:'GKS kontrolü',due:now()-10*M}],ack:false},
+  {id:nid(),bed:'C5',age:45,sex:'E',problem:'Diyabetik ketoasidoz, insülin infüzyonunda',sev:'watch',
+   summary:'Kan şekeri yüksek, ketoz mevcut. Sıvı replasmanı sürüyor, insülin infüzyonu başlandı.',
+   cont:'Potasyum 3,3 mmol/L altına düşerse insülini durdur ve potasyum replasmanı başlat.',
+   tasks:[{id:nid(),x:'Potasyum sonucunu kontrol et',d:false},{id:nid(),x:'Yatış için dahiliyeyi ara',d:false}],
+   timers:[{id:nid(),x:'Saatlik kan şekeri',due:now()+30*M}],ack:false},
+  {id:nid(),bed:'B4',age:34,sex:'E',problem:'Renal kolik, böbrek taşı şüphesi',sev:'stable',
+   summary:'Sol yan ağrısı. İdrarda hematüri. Analjezi sonrası ağrı azaldı. Batın BT sonucu bekleniyor.',
+   cont:'Ateş veya idrar çıkışında azalma olursa obstrüktif piyelonefrit düşün ve acil üroloji iste.',
+   tasks:[{id:nid(),x:'BT sonucunu takip et',d:false}],
+   timers:[{id:nid(),x:'Ağrı yeniden değerlendirme',due:now()+120*M}],ack:false}
+ ]
+};
+
+function log(x){state.audit.unshift({t:now(),x:x})}
+function toast(m){var el=document.getElementById('toast');el.textContent=m;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){el.hidden=true},2000)}
+function pt(id){return state.patients.filter(function(p){return p.id===id})[0]}
+function nextTimer(p){var t=p.timers.slice().sort(function(a,b){return a.due-b.due});return t[0]||null}
+function openTasks(p){return p.tasks.filter(function(t){return !t.d}).length}
+function sorted(){return state.patients.slice().sort(function(a,b){return ORDER[a.sev]-ORDER[b.sev]||a.bed.localeCompare(b.bed)})}
+
+/* ---------- screens ---------- */
+function header(title,sub,back,right){
+ return '<header class="top">'+(back?'<button class="icon-btn" data-act="back" aria-label="Geri">'+ic('back')+'</button>':'')+
+ '<div class="grow"><h1>'+esc(title)+'</h1>'+(sub?'<div class="sub">'+esc(sub)+'</div>':'')+'</div>'+(right||'')+'</header>';
+}
+function tabbar(){
+ var t=[['pano','Devir','list'],['skor','Skorlar','calc'],['ekip','Ekip','users'],['profil','Profil','user']];
+ return '<nav class="tabs" aria-label="Ana menü">'+t.map(function(x){
+  return '<button class="tab" data-act="tab" data-v="'+x[0]+'"'+(state.tab===x[0]&&!state.view?' aria-current="page"':'')+'>'+ic(x[2],22)+'<span>'+x[1]+'</span></button>'}).join('')+'</nav>';
+}
+
+function vLogin(){
+ return '<main class="login"><div><div class="mark">Nöbet<br>Devir</div><p class="muted" style="margin:10px 0 0">Nöbet devir-teslimi için hızlı ve standart bir form.</p></div>'+
+ '<div class="stack"><label class="f">E-posta veya telefon<input id="lg-id" type="text" value="omer@ornek.com" autocomplete="off"></label>'+
+ '<label class="f">Rolün<select id="lg-role">'+ROLES.map(function(r){return '<option'+(r===state.role?' selected':'')+'>'+r+'</option>'}).join('')+'</select></label>'+
+ '<button class="btn primary block" data-act="login">Devam et</button>'+
+ '<p class="small muted" style="margin:0">Diploma doğrulaması yoktur, rol beyana dayanır. Hasta kimlik bilgisi girilmez.</p></div></main>';
+}
+
+function vPano(){
+ var c={unstable:0,watch:0,stable:0};state.patients.forEach(function(p){c[p.sev]++});
+ var h=header('Nöbet Devir','Acil Servis · '+state.patients.length+' hasta',false,'<span class="chip"><span class="dot"></span>Çevrimdışı hazır</span>');
+ var strip='<div class="strip">'+['unstable','watch','stable'].map(function(k){return '<div class="cell '+k+'"><span class="n">'+c[k]+'</span><span class="l">'+SEV[k]+'</span></div>'}).join('')+'</div>';
+ var cards=sorted().map(function(p){
+  var nt=nextTimer(p);var late=nt&&nt.due<now();
+  return '<button class="pt" data-act="open" data-id="'+p.id+'"><div class="bed">'+esc(p.bed)+'</div><div style="min-width:0">'+
+  '<div class="meta"><span class="who">'+p.age+' '+p.sex+'</span><span class="pill '+p.sev+'">'+SEV[p.sev]+'</span></div>'+
+  '<div class="prob">'+esc(p.problem)+'</div>'+
+  '<div class="foot"><span>'+ic('task',14)+openTasks(p)+' görev açık</span>'+(nt?'<span class="'+(late?'late':'')+'">'+ic('clock',14)+esc(dur(nt.due-now()))+'</span>':'')+'</div></div></button>'}).join('');
+ var body='<main>'+strip+'<div class="eyebrow">Hastalar · önce kararsızlar</div>'+cards+
+  '<div class="demo-note">'+ic('shield',16)+'<span>Örnek veri. Yaş, cinsiyet ve yatak numarası dışında kimlik bilgisi tutulmaz. Devirden '+state.retention+' saat sonra silinir.</span></div></main>';
+ var bar='<div class="actionbar"><button class="btn grow" data-act="add">'+ic('plus',18)+'Hasta ekle</button><button class="btn primary grow" data-act="prepare">'+ic('send',18)+'Devri hazırla</button></div>';
+ return h+body+bar+tabbar();
+}
+
+function vAdd(){
+ return header('Yeni hasta kartı','Anonim kayıt',true)+'<main><div class="warnbox">'+ic('shield',18)+'<span>Ad, soyad, TC kimlik, protokol veya telefon numarası girmeyin. Yalnızca yatak/oda numarası kullanın.</span></div>'+
+ (state.addErr?'<div class="errbox" role="alert">'+esc(state.addErr)+'</div>':'')+
+ '<div class="row"><label class="f">Yatak / oda<input id="a-bed" type="text" placeholder="Örn. B2" maxlength="6" autocomplete="off"></label>'+
+ '<label class="f">Yaş<input id="a-age" type="number" min="0" max="120" placeholder="Örn. 52"></label>'+
+ '<label class="f">Cinsiyet<select id="a-sex"><option>E</option><option>K</option></select></label></div>'+
+ '<label class="f">Ana sorun<input id="a-prob" type="text" placeholder="Örn. Göğüs ağrısı, ilk troponin negatif" autocomplete="off"></label>'+
+ '<div class="stack"><div class="eyebrow">Hastalık şiddeti</div><div class="seg" id="a-sev">'+['stable','watch','unstable'].map(function(k,i){return '<button type="button" class="'+k+'" data-act="addsev" data-v="'+k+'" aria-pressed="'+(i===0)+'">'+SEV[k]+'</button>'}).join('')+'</div></div>'+
+ '<label class="f">Özet<textarea id="a-sum" placeholder="Kısa klinik özet"></textarea></label>'+
+ '<button class="btn primary block" data-act="savepatient">Kartı kaydet</button></main>';
+}
+
+function vPatient(){
+ var p=pt(state.sel);if(!p)return '';
+ var tasks=p.tasks.map(function(t){return '<button class="chk" role="checkbox" aria-checked="'+t.d+'" data-act="task" data-id="'+t.id+'"><span class="box">'+ic('check',16)+'</span><span class="txt">'+esc(t.x)+'</span></button>'}).join('')||'<div class="muted small">Görev yok.</div>';
+ var tm=p.timers.slice().sort(function(a,b){return a.due-b.due}).map(function(t){var late=t.due<now();
+  return '<div class="tm"><div style="min-width:0"><div>'+esc(t.x)+'</div><div class="due '+(late?'late':'')+'">'+esc(dur(t.due-now()))+'</div></div><div class="chips"><button class="mini" data-act="snooze" data-id="'+t.id+'" data-m="30">+30 dk</button><button class="mini" data-act="deltimer" data-id="'+t.id+'">Bitti</button></div></div>'}).join('')||'<div class="muted small">Zamanlayıcı yok.</div>';
+ return header('Yatak '+p.bed,p.age+' '+p.sex+' · '+p.problem,true,'<span class="pill '+p.sev+'">'+SEV[p.sev]+'</span>')+
+ '<main>'+
+ '<section class="panel"><div class="ip"><div class="k">I</div><div><div class="t">Hastalık şiddeti</div><div class="seg">'+['stable','watch','unstable'].map(function(k){return '<button class="'+k+'" data-act="sev" data-v="'+k+'" aria-pressed="'+(p.sev===k)+'">'+SEV[k]+'</button>'}).join('')+'</div></div></div></section>'+
+ '<section class="panel"><div class="ip"><div class="k">P</div><div style="min-width:0;width:100%"><div class="t">Hasta özeti</div><textarea id="f-sum" data-field="summary" aria-label="Hasta özeti">'+esc(p.summary)+'</textarea></div></div></section>'+
+ '<section class="panel"><div class="ip"><div class="k">A</div><div style="min-width:0;width:100%"><div class="t">Yapılacaklar</div>'+tasks+
+ '<div class="row" style="margin-top:8px"><input id="f-task" type="text" placeholder="Yeni görev" aria-label="Yeni görev" autocomplete="off" style="flex:1"><button class="btn" data-act="addtask" style="flex:none">Ekle</button></div></div></div></section>'+
+ '<section class="panel"><div class="ip"><div class="k">S</div><div style="min-width:0;width:100%"><div class="t">Olası durumlar</div><textarea id="f-cont" data-field="cont" aria-label="Olası durumlar ve planı">'+esc(p.cont)+'</textarea></div></div></section>'+
+ '<section class="panel"><div class="eyebrow">Tekrar bak</div>'+tm+
+ '<input id="f-tm" type="text" placeholder="Ne için hatırlatılsın?" aria-label="Hatırlatıcı metni" autocomplete="off">'+
+ '<div class="chips">'+[30,60,120,240].map(function(m){return '<button class="mini" data-act="addtimer" data-m="'+m+'">'+(m<60?m+' dk':m/60+' sa')+' sonra</button>'}).join('')+'</div></section>'+
+ '</main>'+tabbar();
+}
+
+function vPrepare(){
+ var h=state.handover;
+ var cands=state.team.filter(function(m){return true});
+ var list=sorted().map(function(p){
+  return '<section class="panel"><div class="meta" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="mono" style="font-weight:500">'+esc(p.bed)+' · '+p.age+' '+p.sex+'</span><span class="pill '+p.sev+'">'+SEV[p.sev]+'</span></div>'+
+  '<div style="font-weight:600">'+esc(p.problem)+'</div>'+
+  '<div class="small"><span class="muted">Özet · </span>'+esc(p.summary)+'</div>'+
+  '<div class="small"><span class="muted">Yapılacak · </span>'+(p.tasks.filter(function(t){return !t.d}).map(function(t){return esc(t.x)}).join('; ')||'Açık görev yok')+'</div>'+
+  '<div class="small"><span class="muted">Olası durum · </span>'+esc(p.cont)+'</div></section>'}).join('');
+ var missing=state.patients.filter(function(p){return p.sev==='unstable'&&!p.cont.trim()}).length;
+ var sent=h.status!=='draft';
+ var foot=sent?'<div class="actionbar"><button class="btn primary block" data-act="receive">Devralan ekranını aç (demo)</button></div>':
+  '<div class="actionbar"><button class="btn primary block" data-act="send"'+(missing?' disabled':'')+'>'+ic('send',18)+'Devri gönder</button></div>';
+ return header('Devir özeti',state.patients.length+' hasta · '+hhmm(),true)+'<main>'+
+ (h.status==='ack'?'<div class="okbox">'+esc(h.to)+' devri devraldı · '+esc(h.ackTime||'')+'</div>':sent?'<div class="warnbox">'+ic('clock',18)+'<span>Devir gönderildi. '+esc(h.to)+' devralma onayı bekleniyor.</span></div>':'')+
+ '<label class="f">Devralan<select id="h-to"'+(sent?' disabled':'')+'>'+cands.map(function(m){return '<option'+(m.n===h.to?' selected':'')+'>'+esc(m.n)+'</option>'}).join('')+'</select></label>'+
+ (missing?'<div class="errbox">Kararsız hastalar için "olası durumlar" alanı boş olamaz.</div>':'')+
+ list+'</main>'+foot;
+}
+
+function vReceive(){
+ var h=state.handover;
+ var allAck=state.patients.every(function(p){return p.ack});
+ var canConfirm=PHYS.indexOf(state.recvRole)>-1;
+ var list=sorted().map(function(p){
+  return '<section class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="mono" style="font-weight:500">'+esc(p.bed)+' · '+p.age+' '+p.sex+'</span><span class="pill '+p.sev+'">'+SEV[p.sev]+'</span></div>'+
+  '<div style="font-weight:600">'+esc(p.problem)+'</div><div class="small">'+esc(p.summary)+'</div>'+
+  '<button class="chk" role="checkbox" aria-checked="'+p.ack+'" data-act="ackpt" data-id="'+p.id+'"><span class="box">'+ic('check',16)+'</span><span class="txt" style="text-decoration:none;color:inherit">Okudum</span></button></section>'}).join('');
+ var done=h.status==='ack';
+ return header('Devralan görünümü',h.to,true)+'<main>'+
+ '<label class="f">Devralanın rolü (demo)<select id="r-role"'+(done?' disabled':'')+'>'+ROLES.map(function(r){return '<option'+(r===state.recvRole?' selected':'')+'>'+r+'</option>'}).join('')+'</select></label>'+
+ (done?'<div class="okbox">Devralındı · '+esc(h.ackTime)+'</div>':'')+
+ (!canConfirm&&!done?'<div class="warnbox">'+ic('shield',18)+'<span>Devralma onayını yalnızca hekim rolleri verebilir. İntörn ve öğrenciler devri okuyabilir.</span></div>':'')+
+ list+'</main><div class="actionbar"><button class="btn primary block" data-act="confirm"'+((!allAck||!canConfirm||done)?' disabled':'')+'>'+ic('check',18)+'Devraldım</button></div>';
+}
+
+function gksTotal(){var g=state.scores.g;return (+g.e)+(+g.v)+(+g.m)}
+function qRes(){var n=state.scores.q.filter(Boolean).length;return {n:n,t:n>=2?'Yüksek risk: sepsis ve kötü sonlanım olasılığı artmış.':'Düşük risk. Klinik tablo yine de değerlendirilmeli.',c:n>=2?'bad':'ok'}}
+function cRes(){var n=state.scores.c.filter(Boolean).length;var t=n<=1?'Düşük risk. Ayaktan tedavi düşünülebilir.':n===2?'Orta risk. Yatış düşünülmeli.':'Yüksek risk. Yoğun bakım değerlendirmesi düşünülmeli.';return {n:n,t:t,c:n<=1?'ok':n===2?'warn':'bad'}}
+function gRes(){var s=gksTotal();return {n:s,t:s>=13?'Hafif bozulma (13–15).':s>=9?'Orta bozulma (9–12).':'Ağır bozulma (8 ve altı).',c:s>=13?'ok':s>=9?'warn':'bad'}}
+function chkRow(group,i,text,on){return '<button class="chk" role="checkbox" aria-checked="'+on+'" data-act="score" data-g="'+group+'" data-i="'+i+'"><span class="box">'+ic('check',16)+'</span><span class="txt" style="text-decoration:none;color:inherit">'+text+'</span></button>'}
+function resBox(id,r,unit){return '<div id="'+id+'" class="panel" style="gap:6px"><div class="score-big" style="color:var(--'+(r.c==='ok'?'ok':r.c==='warn'?'warn':'bad')+')">'+r.n+(unit||'')+'</div><div class="small">'+esc(r.t)+'</div></div>'}
+function sel(id,opts,val){return '<label class="f" style="flex:1">'+id.label+'<select id="'+id.id+'" data-g="gks" data-k="'+id.k+'">'+opts.map(function(o){return '<option value="'+o[0]+'"'+(+val===o[0]?' selected':'')+'>'+o[0]+' · '+o[1]+'</option>'}).join('')+'</select></label>'}
+function vSkor(){
+ var s=state.scores;
+ var q=['Solunum sayısı ≥ 22/dk','Mental durumda bozulma','Sistolik kan basıncı ≤ 100 mmHg'];
+ var c=['Konfüzyon','Üre > 7 mmol/L (BUN > 19 mg/dL)','Solunum sayısı ≥ 30/dk','Sistolik < 90 veya diyastolik ≤ 60 mmHg','Yaş ≥ 65'];
+ return header('Klinik skorlar','Hızlı hesaplayıcılar')+'<main>'+
+ '<section class="panel"><h2>qSOFA</h2>'+q.map(function(t,i){return chkRow('q',i,t,s.q[i])}).join('')+resBox('res-q',qRes(),' / 3')+'<div class="small muted">Kaynak: Seymour ve ark., JAMA 2016 (Sepsis-3).</div></section>'+
+ '<section class="panel"><h2>CURB-65</h2>'+c.map(function(t,i){return chkRow('c',i,t,s.c[i])}).join('')+resBox('res-c',cRes(),' / 5')+'<div class="small muted">Kaynak: Lim ve ark., Thorax 2003.</div></section>'+
+ '<section class="panel"><h2>Glasgow Koma Skalası</h2><div class="stack">'+
+ sel({label:'Göz açma',id:'g-e',k:'e'},[[4,'Spontan'],[3,'Sözel uyarana'],[2,'Ağrılı uyarana'],[1,'Yok']],s.g.e)+
+ sel({label:'Sözel yanıt',id:'g-v',k:'v'},[[5,'Oryante'],[4,'Konfüze'],[3,'Uygunsuz kelimeler'],[2,'Anlamsız sesler'],[1,'Yok']],s.g.v)+
+ sel({label:'Motor yanıt',id:'g-m',k:'m'},[[6,'Emre uyar'],[5,'Ağrıyı lokalize eder'],[4,'Ağrıdan çekilir'],[3,'Fleksiyon'],[2,'Ekstansiyon'],[1,'Yok']],s.g.m)+
+ '</div>'+resBox('res-g',gRes(),' / 15')+'<div class="small muted">Kaynak: Teasdale ve Jennett, Lancet 1974.</div></section>'+
+ '<div class="demo-note">'+ic('shield',16)+'<span>Klinik karar destek aracıdır, tıbbi cihaz değildir. Karar ve sorumluluk hekime aittir.</span></div></main>'+tabbar();
+}
+
+function vEkip(){
+ var days=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];var today=(new Date().getDay()+6)%7;var mine=[today,(today+3)%7];
+ return header('Ekip','Acil Servis Nöbet Ekibi')+'<main>'+
+ '<section class="panel"><div class="eyebrow">Bu hafta nöbetlerim</div><div class="week">'+days.map(function(d,i){var d0=new Date();d0.setDate(d0.getDate()+i-today);return '<div class="'+(mine.indexOf(i)>-1?'on':'')+'"><span>'+d+'</span><b>'+d0.getDate()+'</b></div>'}).join('')+'</div></section>'+
+ '<section class="panel"><div class="eyebrow">Davet kodu</div><div class="copy"><span class="code" id="invite">NBT-4K9Q</span><button class="mini" data-act="copy">Kopyala</button></div><div class="small muted">Devir paylaşmak için ekibe yalnızca bu kodla katılınır.</div></section>'+
+ '<section class="panel"><div class="eyebrow">Üyeler</div>'+state.team.map(function(m){return '<div class="kv"><span>'+esc(m.n)+'</span><span class="chip">'+esc(m.r)+'</span></div>'}).join('')+'</section></main>'+tabbar();
+}
+
+function vProfil(){
+ return header('Profil','omer@ornek.com')+'<main>'+
+ '<section class="panel"><label class="f">Rolün<select id="p-role">'+ROLES.map(function(r){return '<option'+(r===state.role?' selected':'')+'>'+r+'</option>'}).join('')+'</select></label>'+
+ '<div class="small muted">Rol beyana dayanır. Devralma onayı yalnızca hekim rollerine açıktır.</div></section>'+
+ '<section class="panel"><label class="f">Devirden sonra otomatik silme<select id="p-ret">'+[12,24,48].map(function(h){return '<option value="'+h+'"'+(state.retention===h?' selected':'')+'>'+h+' saat</option>'}).join('')+'</select></label></section>'+
+ '<section class="panel"><div class="eyebrow">Erişim ve değişiklik kaydı</div>'+state.audit.slice(0,8).map(function(a){return '<div class="log"><time>'+hhmm(a.t)+'</time><span>'+esc(a.x)+'</span></div>'}).join('')+'</section>'+
+ '<button class="btn block" data-act="logout">Çıkış yap</button>'+
+ '<div class="demo-note">'+ic('shield',16)+'<span>Demo: veriler yalnızca bu sayfada, bellekte tutulur. Klinik karar destek aracıdır, tıbbi cihaz değildir.</span></div></main>'+tabbar();
+}
+
+var app=document.getElementById('app');
+function render(){
+ var html;
+ if(!state.loggedIn)html=vLogin();
+ else if(state.view==='add')html=vAdd();
+ else if(state.view==='patient')html=vPatient();
+ else if(state.view==='prepare')html=vPrepare();
+ else if(state.view==='receive')html=vReceive();
+ else html={pano:vPano,skor:vSkor,ekip:vEkip,profil:vProfil}[state.tab]();
+ app.innerHTML=html;
+}
+
+/* ---------- events ---------- */
+function mono(){return /\d{9,}/}
+app.addEventListener('click',function(e){
+ var el=e.target.closest('[data-act]');if(!el)return;
+ var a=el.dataset.act,p;
+ if(a==='tab'){state.tab=el.dataset.v;state.view=null;}
+ else if(a==='back'){if(state.view==='receive')state.view='prepare';else state.view=null;state.addErr='';}
+ else if(a==='open'){state.sel=el.dataset.id;state.view='patient';}
+ else if(a==='add'){state.view='add';state.addSev='stable';}
+ else if(a==='addsev'){state.addSev=el.dataset.v;Array.prototype.forEach.call(document.querySelectorAll('#a-sev button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===state.addSev)});return;}
+ else if(a==='savepatient'){
+  var bed=document.getElementById('a-bed').value.trim(),age=+document.getElementById('a-age').value,prob=document.getElementById('a-prob').value.trim(),sum=document.getElementById('a-sum').value.trim();
+  if(!bed||!prob||!age){state.addErr='Yatak numarası, yaş ve ana sorun zorunludur.';render();return;}
+  if(mono().test(bed+prob+sum)||/\b\d{11}\b/.test(bed+prob+sum)){state.addErr='Metinde kimlik numarası gibi bir ifade var. Kaldırıp tekrar deneyin.';render();return;}
+  var np={id:nid(),bed:bed.toUpperCase(),age:age,sex:document.getElementById('a-sex').value,problem:prob,sev:state.addSev||'stable',summary:sum,cont:'',tasks:[],timers:[],ack:false};
+  state.patients.push(np);log(np.bed+' kartı oluşturuldu');state.addErr='';state.sel=np.id;state.view='patient';toast('Kart kaydedildi');
+ }
+ else if(a==='sev'){p=pt(state.sel);p.sev=el.dataset.v;log(p.bed+' şiddet: '+SEV[p.sev]);}
+ else if(a==='task'){p=pt(state.sel);var t=p.tasks.filter(function(x){return x.id===el.dataset.id})[0];t.d=!t.d;if(t.d)log(p.bed+' görev tamamlandı');}
+ else if(a==='addtask'){var v=document.getElementById('f-task').value.trim();if(!v)return;p=pt(state.sel);p.tasks.push({id:nid(),x:v,d:false});log(p.bed+' görev eklendi');}
+ else if(a==='addtimer'){p=pt(state.sel);var tx=document.getElementById('f-tm').value.trim()||'Yeniden değerlendir';p.timers.push({id:nid(),x:tx,due:now()+(+el.dataset.m)*M});log(p.bed+' hatırlatıcı kuruldu');toast('Hatırlatıcı kuruldu');}
+ else if(a==='snooze'){p=pt(state.sel);var tt=p.timers.filter(function(x){return x.id===el.dataset.id})[0];tt.due=Math.max(tt.due,now())+(+el.dataset.m)*M;}
+ else if(a==='deltimer'){p=pt(state.sel);p.timers=p.timers.filter(function(x){return x.id!==el.dataset.id});log(p.bed+' hatırlatıcı tamamlandı');}
+ else if(a==='prepare'){state.view='prepare';}
+ else if(a==='send'){var s=document.getElementById('h-to');state.handover.to=s.value;state.handover.status='sent';log('Devir gönderildi: '+s.value);toast('Devir gönderildi');}
+ else if(a==='receive'){state.view='receive';}
+ else if(a==='ackpt'){p=pt(el.dataset.id);p.ack=!p.ack;}
+ else if(a==='confirm'){state.handover.status='ack';state.handover.ackTime=hhmm();log(state.handover.to+' devri devraldı');toast('Devir devralındı');}
+ else if(a==='score'){var g=el.dataset.g,i=+el.dataset.i;state.scores[g][i]=!state.scores[g][i];}
+ else if(a==='copy'){try{navigator.clipboard.writeText('NBT-4K9Q').then(function(){toast('Kopyalandı')},function(){toast('Kodu seçip kopyalayın')})}catch(x){toast('Kodu seçip kopyalayın')}return;}
+ else if(a==='logout'){state.loggedIn=false;}
+ else if(a==='login'){state.role=document.getElementById('lg-role').value;state.loggedIn=true;state.tab='pano';state.view=null;log('Giriş yapıldı ('+state.role+')');}
+ render();
+});
+app.addEventListener('input',function(e){
+ var f=e.target.dataset&&e.target.dataset.field;
+ if(f){var p=pt(state.sel);if(p)p[f]=e.target.value;}
+});
+app.addEventListener('change',function(e){
+ var t=e.target;
+ if(t.id==='p-role'){state.role=t.value;log('Rol değişti: '+t.value);toast('Rol güncellendi');}
+ else if(t.id==='p-ret'){state.retention=+t.value;log('Otomatik silme: '+t.value+' saat');toast('Silme süresi güncellendi');}
+ else if(t.id==='r-role'){state.recvRole=t.value;render();}
+ else if(t.id==='h-to'){state.handover.to=t.value;}
+ else if(t.dataset&&t.dataset.g==='gks'){state.scores.g[t.dataset.k]=+t.value;var r=gRes();var box=document.getElementById('res-g');box.outerHTML=resBox('res-g',r,' / 15');}
+});
+setInterval(function(){
+ var ae=document.activeElement;var typing=ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName);
+ if(!typing&&state.loggedIn&&(state.tab==='pano'&&!state.view||state.view==='patient'))render();
+},30000);
+render();
+})();
+</script>
+
+</body></html>
