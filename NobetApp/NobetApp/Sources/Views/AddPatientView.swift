@@ -6,13 +6,16 @@ struct AddPatientView: View {
     @Environment(\.modelContext) private var ctx
     @Environment(AppStore.self) private var store
 
-    @State private var bed       = ""
-    @State private var age       = ""
-    @State private var sex: Sex  = .erkek
-    @State private var problem   = ""
+    @Query private var existingPatients: [Patient]
+
+    @State private var bed         = ""
+    @State private var age         = ""
+    @State private var sex: Sex    = .erkek
+    @State private var problem     = ""
     @State private var severity: Severity = .stable
-    @State private var summary   = ""
-    @State private var errorMsg  = ""
+    @State private var summary     = ""
+    @State private var contingency = ""
+    @State private var errorMsg    = ""
 
     // Simple PII detection
     private func containsPII(_ s: String) -> Bool {
@@ -23,14 +26,19 @@ struct AddPatientView: View {
 
     private func save() {
         errorMsg = ""
-        let bedTrimmed = bed.trimmingCharacters(in: .whitespaces)
+        let bedTrimmed = bed.trimmingCharacters(in: .whitespaces).uppercased()
         let probTrimmed = problem.trimmingCharacters(in: .whitespaces)
-        guard !bedTrimmed.isEmpty, !probTrimmed.isEmpty, let ageInt = Int(age), ageInt > 0 else {
-            errorMsg = "Yatak numarası, yaş ve ana sorun zorunludur."
+        guard !bedTrimmed.isEmpty, !probTrimmed.isEmpty, let ageInt = Int(age), ageInt > 0, ageInt <= 130 else {
+            errorMsg = "Geçerli bir yatak numarası, yaş (1-130) ve ana sorun zorunludur."
             hapticNotification(.error)
             return
         }
-        let combined = bedTrimmed + probTrimmed + summary
+        if existingPatients.contains(where: { $0.bed.trimmingCharacters(in: .whitespaces).uppercased() == bedTrimmed }) {
+            errorMsg = "\(bedTrimmed) numaralı yatakta zaten kayıtlı bir hasta var. Farklı bir yatak girin."
+            hapticNotification(.error)
+            return
+        }
+        let combined = bedTrimmed + probTrimmed + summary + contingency
         if containsPII(combined) {
             errorMsg = "Metinde kimlik numarası gibi bir ifade var. Kaldırıp tekrar deneyin."
             hapticNotification(.error)
@@ -39,6 +47,7 @@ struct AddPatientView: View {
 
         let patient          = Patient(bed: bedTrimmed, age: ageInt, sex: sex, problem: probTrimmed, severity: severity)
         patient.summary      = summary.trimmingCharacters(in: .whitespaces)
+        patient.contingency  = contingency.trimmingCharacters(in: .whitespaces)
         ctx.insert(patient)
 
         // Audit
@@ -56,27 +65,37 @@ struct AddPatientView: View {
                     // Privacy banner
                     HStack(alignment: .top, spacing: 10) {
                         Image(systemName: "lock.shield.fill")
-                            .foregroundStyle(.orange)
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.brand)
                         Text("Ad, soyad, TC kimlik veya protokol numarası girmeyin. Yalnızca yatak/oda numarası kullanın.")
-                            .font(.system(size: 13))
-                            .foregroundStyle(.orange)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.secondary)
                     }
                     .padding(12)
-                    .background(Color.orange.opacity(0.1))
+                    .background(Color.brand.opacity(0.08))
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.brand.opacity(0.2), lineWidth: 0.5)
+                    )
 
                     // Error
                     if !errorMsg.isEmpty {
                         HStack(spacing: 8) {
                             Image(systemName: "exclamationmark.circle.fill")
+                                .font(.system(size: 13))
                             Text(errorMsg)
                         }
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(Color.severityFG(.unstable))
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.severityBG(.unstable))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.severityBorder(.unstable), lineWidth: 0.5)
+                        )
                     }
 
                     // Bed / Age / Sex row
@@ -124,15 +143,23 @@ struct AddPatientView: View {
                             .autocorrectionDisabled()
                     }
 
+                    // Contingency (Olası durumlar)
+                    LabeledField(label: severity == .unstable ? "Olası Durumlar ve Plan (Kararsız hasta için zorunlu)" : "Olası Durumlar ve Eylem Planı (isteğe bağlı)") {
+                        TextField("Kötüleşme durumunda yapılacaklar...", text: $contingency, axis: .vertical)
+                            .lineLimit(2...4)
+                            .autocorrectionDisabled()
+                    }
+
                     // Save
                     Button(action: save) {
-                        Text("Kartı kaydet")
-                            .font(.system(size: 17, weight: .semibold))
+                        Text("Kartı Kaydet")
+                            .font(.system(size: 16, weight: .bold))
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(Color.teal)
+                            .padding(.vertical, 14)
+                            .background(Color.brand)
                             .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .shadow(color: Color.brand.opacity(0.25), radius: 8, y: 3)
                     }
                     .padding(.top, 4)
                 }
@@ -166,11 +193,11 @@ struct LabeledField<Content: View>: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(Color(.separator).opacity(0.5), lineWidth: 0.5)
+                        .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
                 )
         }
     }

@@ -36,6 +36,9 @@ struct ContentView: View {
                 }
             }
         }
+        .onOpenURL { url in
+            store.handleDeepLink(url: url, ctx: ctx)
+        }
         .onAppear {
             store.deduplicateExistingData(ctx: ctx)
             store.performRetentionCleanup(ctx: ctx)
@@ -57,7 +60,7 @@ struct PrivacyShieldView: View {
             VStack(spacing: 16) {
                 Image(systemName: "lock.shield.fill")
                     .font(.system(size: 64))
-                    .foregroundStyle(Color.teal)
+                    .foregroundStyle(Color.brand)
 
                 Text("Nöbet Devir")
                     .font(.system(size: 24, weight: .bold))
@@ -86,7 +89,7 @@ struct BiometricLockView: View {
 
             Image(systemName: "faceid")
                 .font(.system(size: 72))
-                .foregroundStyle(Color.teal)
+                .foregroundStyle(Color.brand)
 
             VStack(spacing: 8) {
                 Text("Nöbet Devir Kilitli")
@@ -104,12 +107,13 @@ struct BiometricLockView: View {
                 store.authenticateBiometrics()
             } label: {
                 Label("Kilidi Aç", systemImage: "touchid")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: 16, weight: .bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color.teal)
+                    .background(Color.brand)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .shadow(color: Color.brand.opacity(0.25), radius: 8, y: 3)
             }
             .padding(.horizontal, 32)
             .padding(.top, 12)
@@ -153,7 +157,7 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.profil)
         }
-        .tint(Color.teal)
+        .tint(Color.brand)
         .task {
             await NotificationManager.shared.requestPermission()
         }

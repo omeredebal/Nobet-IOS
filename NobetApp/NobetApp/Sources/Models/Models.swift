@@ -97,7 +97,12 @@ final class Patient: Identifiable {
     }
 
     var sortedTasks: [PatientTask] {
-        tasks.sorted { !$0.isDone && $1.isDone }
+        tasks.sorted {
+            if $0.isDone != $1.isDone {
+                return !$0.isDone && $1.isDone
+            }
+            return $0.createdAt < $1.createdAt
+        }
     }
 
     init(bed: String, age: Int, sex: Sex = .erkek,

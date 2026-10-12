@@ -21,28 +21,30 @@ final class HandoverState {
         static let sentAt   = "handover_sent_at"
     }
 
-    var status: HandoverStatus {
-        get { HandoverStatus(rawValue: UserDefaults.standard.string(forKey: Keys.status) ?? "") ?? .draft }
-        set { UserDefaults.standard.set(newValue.rawValue, forKey: Keys.status) }
+    var status: HandoverStatus = {
+        HandoverStatus(rawValue: UserDefaults.standard.string(forKey: Keys.status) ?? "") ?? .draft
+    }() {
+        didSet { UserDefaults.standard.set(status.rawValue, forKey: Keys.status) }
     }
 
-    var toName: String {
-        get { UserDefaults.standard.string(forKey: Keys.toName) ?? "" }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.toName) }
+    var toName: String = {
+        UserDefaults.standard.string(forKey: Keys.toName) ?? ""
+    }() {
+        didSet { UserDefaults.standard.set(toName, forKey: Keys.toName) }
     }
 
-    var ackTime: String? {
-        get { UserDefaults.standard.string(forKey: Keys.ackTime) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.ackTime) }
+    var ackTime: String? = {
+        UserDefaults.standard.string(forKey: Keys.ackTime)
+    }() {
+        didSet { UserDefaults.standard.set(ackTime, forKey: Keys.ackTime) }
     }
 
-    var sentAt: Date? {
-        get {
-            let t = UserDefaults.standard.double(forKey: Keys.sentAt)
-            return t == 0 ? nil : Date(timeIntervalSince1970: t)
-        }
-        set {
-            UserDefaults.standard.set(newValue?.timeIntervalSince1970 ?? 0, forKey: Keys.sentAt)
+    var sentAt: Date? = {
+        let t = UserDefaults.standard.double(forKey: Keys.sentAt)
+        return t == 0 ? nil : Date(timeIntervalSince1970: t)
+    }() {
+        didSet {
+            UserDefaults.standard.set(sentAt?.timeIntervalSince1970 ?? 0, forKey: Keys.sentAt)
         }
     }
 

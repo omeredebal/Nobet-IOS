@@ -20,6 +20,7 @@ final class NotificationManager {
 
     /// Schedule a local notification for a patient timer.
     func schedule(timer: PatientTimer, patientBed: String) {
+        cancel(notificationID: timer.notificationID)
         let content         = UNMutableNotificationContent()
         content.title       = "Yatak \(patientBed) · \(timer.text)"
         content.body        = "Hatırlatıcı zamanı geldi."
@@ -48,14 +49,16 @@ final class NotificationManager {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
-    /// Snooze: remove existing and re-schedule +30 min.
-    func snooze(timer: PatientTimer, patientBed: String, minutes: Double = 30) {
+    /// Snooze: remove existing and re-schedule.
+    func snooze(timer: PatientTimer, patientBed: String) {
         cancel(notificationID: timer.notificationID)
+        let interval = timer.due.timeIntervalSinceNow
+        guard interval > 0 else { return }
         let content         = UNMutableNotificationContent()
         content.title       = "Yatak \(patientBed) · \(timer.text)"
         content.body        = "Ertelendi – yeniden hatırlatma."
         content.sound       = .defaultCritical
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: minutes * 60, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
         let request = UNNotificationRequest(identifier: timer.notificationID,
                                             content: content,
                                             trigger: trigger)

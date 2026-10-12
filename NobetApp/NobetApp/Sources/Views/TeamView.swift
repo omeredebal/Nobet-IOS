@@ -76,11 +76,15 @@ struct TeamView: View {
                             Text("Ekipten Ayrıl")
                         }
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.severityFG(.unstable))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color.red.opacity(0.08))
+                        .background(Color.severityBG(.unstable))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.severityBorder(.unstable), lineWidth: 0.5)
+                        )
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 4)
@@ -126,12 +130,12 @@ struct TeamView: View {
     private var teamHeaderCard: some View {
         HStack(spacing: 14) {
             Circle()
-                .fill(Color.teal.opacity(0.12))
-                .frame(width: 48, height: 48)
+                .fill(Color.brand.opacity(0.10))
+                .frame(width: 46, height: 46)
                 .overlay(
                     Image(systemName: "person.3.sequence.fill")
-                        .font(.system(size: 20))
-                        .foregroundStyle(Color.teal)
+                        .font(.system(size: 18))
+                        .foregroundStyle(Color.brand)
                 )
 
             VStack(alignment: .leading, spacing: 3) {
@@ -203,15 +207,15 @@ struct TeamView: View {
 
             HStack(spacing: 8) {
                 Text(store.inviteCode)
-                    .font(AppFont.mono(22, weight: .bold))
-                    .foregroundStyle(Color.teal)
+                    .font(AppFont.mono(20, weight: .bold))
+                    .foregroundStyle(Color.brand)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(Color.teal.opacity(0.4), lineWidth: 1.5)
+                            .stroke(Color.brand.opacity(0.3), lineWidth: 0.5)
                     )
 
                 Spacer()
@@ -228,8 +232,8 @@ struct TeamView: View {
                     .font(.system(size: 13, weight: .semibold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
-                    .background(Color.teal.opacity(0.12))
-                    .foregroundStyle(Color.teal)
+                    .background(Color.brand.opacity(0.10))
+                    .foregroundStyle(Color.brand)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .buttonStyle(.plain)
@@ -243,7 +247,7 @@ struct TeamView: View {
                     .font(.system(size: 13, weight: .semibold))
                     .padding(.horizontal, 11)
                     .padding(.vertical, 8)
-                    .background(Color.teal)
+                    .background(Color.brand)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
@@ -284,12 +288,12 @@ struct TeamView: View {
         } label: {
             HStack(spacing: 14) {
                 Circle()
-                    .fill(Color.blue.opacity(0.12))
+                    .fill(Color.brand.opacity(0.10))
                     .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "person.badge.key.fill")
-                            .font(.system(size: 19))
-                            .foregroundStyle(.blue)
+                            .font(.system(size: 18))
+                            .foregroundStyle(Color.brand)
                     )
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -332,13 +336,13 @@ struct TeamView: View {
                     ForEach(members) { member in
                         HStack(spacing: 12) {
                             Circle()
-                                .fill(Color.teal.opacity(0.14))
-                                .frame(width: 40, height: 40)
+                                .fill(Color.brand.opacity(0.10))
+                                .frame(width: 38, height: 38)
                                 .overlay(
                                     Text(member.name.prefix(1).uppercased())
-                                        .font(.system(size: 15, weight: .bold))
-                                        .foregroundStyle(Color.teal)
-                                )
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundStyle(Color.brand)
+                                    )
 
                             VStack(alignment: .leading, spacing: 2) {
                                 HStack(spacing: 6) {
@@ -349,7 +353,7 @@ struct TeamView: View {
                                     if member.name.lowercased() == store.userEmail.lowercased() {
                                         Text("(Sen)")
                                             .font(.system(size: 11, weight: .semibold))
-                                            .foregroundStyle(Color.teal)
+                                            .foregroundStyle(Color.brand)
                                     }
                                 }
 
@@ -364,8 +368,8 @@ struct TeamView: View {
                                 .font(.system(size: 11, weight: .bold))
                                 .padding(.horizontal, 9)
                                 .padding(.vertical, 4)
-                                .background(Color.teal.opacity(0.12))
-                                .foregroundStyle(Color.teal)
+                                .background(Color.brand.opacity(0.08))
+                                .foregroundStyle(Color.brand)
                                 .clipShape(Capsule())
                         }
                         if member.id != members.last?.id {
@@ -384,10 +388,12 @@ struct TeamView: View {
     // MARK: - Week grid
 
     private var weekGrid: some View {
-        let cal = Calendar.current
+        var cal = Calendar(identifier: .gregorian)
+        cal.firstWeekday = 2
         let today = cal.startOfDay(for: Date())
-        let todayWeekday = cal.component(.weekday, from: today)   // 1 = Sun
-        let monday = cal.date(byAdding: .day, value: 2 - todayWeekday, to: today)!
+        let todayWeekday = cal.component(.weekday, from: today)
+        let offsetToMonday = (todayWeekday == 1) ? -6 : (2 - todayWeekday)
+        let monday = cal.date(byAdding: .day, value: offsetToMonday, to: today)!
         let days = (0..<7).map { cal.date(byAdding: .day, value: $0, to: monday)! }
         let shortSymbols = ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"]
 
@@ -414,11 +420,11 @@ struct TeamView: View {
                         .padding(.vertical, 8)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(isOnDuty ? Color.teal : (isToday ? Color.teal.opacity(0.12) : Color(.secondarySystemGroupedBackground)))
+                                .fill(isOnDuty ? Color.brand : (isToday ? Color.brand.opacity(0.10) : Color(.secondarySystemGroupedBackground)))
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .stroke(isToday && !isOnDuty ? Color.teal.opacity(0.5) : Color.clear, lineWidth: 1)
+                                .stroke(isToday && !isOnDuty ? Color.brand.opacity(0.4) : Color.clear, lineWidth: 0.5)
                         )
                     }
                     .buttonStyle(.plain)
@@ -461,7 +467,7 @@ struct TeamQRCodeSheet: View {
                 VStack(spacing: 6) {
                     Text(store.inviteCode)
                         .font(AppFont.mono(30, weight: .bold))
-                        .foregroundStyle(Color.teal)
+                        .foregroundStyle(Color.brand)
 
                     Text(store.teamName)
                         .font(.system(size: 17, weight: .bold))
@@ -479,7 +485,7 @@ struct TeamQRCodeSheet: View {
                         Text("100% Çevrimdışı Çalışır (Sıfır Bulut / Sıfır Sunucu)")
                             .font(.system(size: 12, weight: .bold))
                     }
-                    .foregroundStyle(Color.teal)
+                    .foregroundStyle(Color.brand)
 
                     Text("Hastane içinde internet veya merkezi sunucuya ihtiyaç duymadan, diğer hekim ekranınızdaki bu karekodu okutarak veya altındaki kodu girerek anında bu ekibe katılır.")
                         .font(.system(size: 12))
@@ -524,7 +530,7 @@ struct JoinTeamSheet: View {
                     VStack(alignment: .center, spacing: 10) {
                         Image(systemName: "person.badge.key.fill")
                             .font(.system(size: 44))
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                             .padding(.top, 6)
 
                         Text("Ekibe Katıl")
@@ -544,7 +550,7 @@ struct JoinTeamSheet: View {
                     HStack(spacing: 8) {
                         Image(systemName: "bolt.horizontal.circle.fill")
                             .font(.system(size: 16))
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                         Text("İnternet veya sunucu gerekmez. Yanınızdaki hekimin ekranındaki kodu girerek veya AirDrop/Bluetooth ile paylaşılan kodu kullanarak anında aynı nöbet ekibine dahil olursunuz.")
                             .font(.system(size: 12))
                             .foregroundStyle(.secondary)
@@ -555,7 +561,7 @@ struct JoinTeamSheet: View {
                 Section("Davet Kodu") {
                     HStack {
                         Image(systemName: "key.fill")
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
 
                         TextField("Örn. NBT-4K9Q", text: $code)
                             .font(AppFont.mono(17, weight: .bold))
@@ -579,7 +585,7 @@ struct JoinTeamSheet: View {
                         } label: {
                             Text("Yapıştır")
                                 .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(Color.teal)
+                                .foregroundStyle(Color.brand)
                         }
                     }
 
@@ -612,7 +618,7 @@ struct JoinTeamSheet: View {
                         }
                         .padding(.vertical, 4)
                     }
-                    .listRowBackground(canSubmit ? Color.teal : Color.secondary.opacity(0.4))
+                    .listRowBackground(canSubmit ? Color.brand : Color.secondary.opacity(0.4))
                     .disabled(!canSubmit)
                 }
             }
@@ -702,7 +708,7 @@ struct CreateTeamSheet: View {
                         }
                         .padding(.vertical, 4)
                     }
-                    .listRowBackground(Color.teal)
+                    .listRowBackground(Color.brand)
                 }
             }
             .navigationTitle("Yeni Ekip Kur")

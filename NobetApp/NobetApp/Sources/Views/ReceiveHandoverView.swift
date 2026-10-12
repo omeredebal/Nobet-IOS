@@ -7,6 +7,7 @@ struct ReceiveHandoverView: View {
     @Environment(AppStore.self) private var store
 
     @Query private var allPatients: [Patient]
+    @Query private var members: [TeamMember]
 
     @State private var receiverRole: UserRole = .asistan
 
@@ -58,14 +59,19 @@ struct ReceiveHandoverView: View {
                     if !receiverRole.isPhysician && !isDone {
                         HStack(spacing: 8) {
                             Image(systemName: "lock.fill")
+                                .font(.system(size: 13))
                             Text("Devralma onayını yalnızca hekim rolleri verebilir. İntörn ve öğrenciler devri okuyabilir.")
+                                .font(.system(size: 13, weight: .medium))
                         }
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Color.severityFG(.watch))
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.orange.opacity(0.1))
+                        .background(Color.severityBG(.watch))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.severityBorder(.watch), lineWidth: 0.5)
+                        )
                     }
 
                     // Done banner
@@ -77,13 +83,17 @@ struct ReceiveHandoverView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.severityBG(.stable))
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(Color.severityBorder(.stable), lineWidth: 0.5)
+                            )
                     }
 
                     // Progress
                     if !isDone {
                         HStack {
                             Text("\(patients.filter(\.acknowledged).count) / \(patients.count) okundu")
-                                .font(.system(size: 13))
+                                .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(.secondary)
                             Spacer()
                             Button("Tümünü Okundu Yap") {
@@ -91,7 +101,7 @@ struct ReceiveHandoverView: View {
                                 hapticNotification(.success)
                             }
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                         }
                     }
 
@@ -111,6 +121,13 @@ struct ReceiveHandoverView: View {
                     Button("Kapat") { dismiss() }
                 }
             }
+            .onAppear {
+                if let matched = members.first(where: { $0.name.lowercased() == store.handover.toName.lowercased() }) {
+                    receiverRole = matched.role
+                } else if store.userRole.isPhysician {
+                    receiverRole = store.userRole
+                }
+            }
             .overlay(alignment: .bottom) {
                 if !isDone {
                     Button {
@@ -118,14 +135,18 @@ struct ReceiveHandoverView: View {
                         store.handover.acknowledge()
                         ctx.insert(AuditEntry(message: "\(store.handover.toName) devri devraldı"))
                         hapticNotification(.success)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            dismiss()
+                        }
                     } label: {
                         Label("Devraldım", systemImage: "checkmark.seal.fill")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.system(size: 16, weight: .bold))
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(canConfirm ? Color.teal : Color(.systemFill))
+                            .padding(.vertical, 14)
+                            .background(canConfirm ? Color.brand : Color(.systemFill))
                             .foregroundStyle(canConfirm ? .white : .secondary)
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .shadow(color: canConfirm ? Color.brand.opacity(0.25) : .clear, radius: 8, y: 3)
                     }
                     .disabled(!canConfirm)
                     .padding(.horizontal, 16)
@@ -170,11 +191,11 @@ private struct ReceivePatientCard: View {
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: "arrow.triangle.branch")
                         .font(.system(size: 11))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Color.severityFG(.watch))
                         .padding(.top, 2)
                     Text(patient.contingency)
                         .font(.system(size: 13))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Color.severityFG(.watch))
                 }
             }
 
@@ -187,12 +208,12 @@ private struct ReceivePatientCard: View {
                 haptic()
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: patient.acknowledged ? "checkmark.square.fill" : "square")
+                    Image(systemName: patient.acknowledged ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 18))
-                        .foregroundStyle(patient.acknowledged ? Color.teal : .secondary)
+                        .foregroundStyle(patient.acknowledged ? Color.brand : Color(.systemGray3))
                     Text(patient.acknowledged ? "Okundu" : "Okudum olarak işaretle")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(patient.acknowledged ? Color.teal : .primary)
+                        .font(.system(size: 14, weight: patient.acknowledged ? .semibold : .medium))
+                        .foregroundStyle(patient.acknowledged ? Color.brand : .primary)
                 }
             }
             .buttonStyle(.plain)

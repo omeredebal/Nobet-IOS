@@ -22,7 +22,7 @@ struct ProfileView: View {
                     HStack(spacing: 14) {
                         Image(systemName: "person.circle.fill")
                             .font(.system(size: 44))
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(store.userEmail.isEmpty ? "Kullanıcı" : store.userEmail)
                                 .font(.system(size: 16, weight: .semibold))
@@ -73,7 +73,7 @@ struct ProfileView: View {
 
                     HStack(alignment: .top, spacing: 8) {
                         Image(systemName: "lock.shield.fill")
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                             .font(.system(size: 13))
                         Text("Hasta verileri devirden \(store.retentionHours) saat sonra otomatik silinir. Veriler yalnızca bu cihazda saklanır.")
                             .font(.system(size: 12))
@@ -107,13 +107,7 @@ struct ProfileView: View {
                         .foregroundStyle(.white)
                         .padding(.vertical, 4)
                     }
-                    .listRowBackground(
-                        LinearGradient(
-                            colors: [Color.teal, Color.teal.opacity(0.85)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .listRowBackground(Color.brand)
 
                     Button(role: .destructive) {
                         showClearDataAlert = true
@@ -130,7 +124,7 @@ struct ProfileView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "list.bullet.rectangle.portrait.fill")
                                 .font(.system(size: 20))
-                                .foregroundStyle(Color.teal)
+                                .foregroundStyle(Color.brand)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Erişim ve Değişiklik Günlüğü")
@@ -245,7 +239,7 @@ struct AuditLogView: View {
             case .handover:
                 matchesCategory = text.contains("devir") || text.contains("devral") || text.contains("sıfırlandı")
             case .security:
-                matchesCategory = text.contains("biyometrik") || text.contains("kilit") || text.contains("rol") || text.contains("kod") || text.contains("silme") || text.contains("ayrıldı")
+                matchesCategory = text.contains("biyometrik") || text.contains("kilit") || text.contains("rol değişti") || text.contains("davet") || text.contains("otomatik saklama") || text.contains("ayrıldı")
             }
             if !matchesCategory { return false }
 
@@ -291,7 +285,7 @@ struct AuditLogView: View {
                                     .padding(.vertical, 7)
                                     .background(
                                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(isSelected ? Color.teal : Color(.secondarySystemGroupedBackground))
+                                            .fill(isSelected ? Color.brand : Color(.secondarySystemGroupedBackground))
                                     )
                                     .foregroundStyle(isSelected ? .white : .primary)
                             }
@@ -310,7 +304,7 @@ struct AuditLogView: View {
             HStack(spacing: 8) {
                 Image(systemName: "calendar")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(Color.teal)
+                    .foregroundStyle(Color.brand)
 
                 ForEach([DateFilterPreset.all, .today, .yesterday], id: \.self) { preset in
                     let isSel = (selectedDateFilter == preset)
@@ -324,8 +318,8 @@ struct AuditLogView: View {
                             .font(.system(size: 12, weight: isSel ? .bold : .medium))
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
-                            .background(isSel ? Color.teal.opacity(0.18) : Color(.tertiarySystemGroupedBackground))
-                            .foregroundStyle(isSel ? Color.teal : .secondary)
+                            .background(isSel ? Color.brand.opacity(0.12) : Color(.tertiarySystemGroupedBackground))
+                            .foregroundStyle(isSel ? Color.brand : .secondary)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -343,7 +337,7 @@ struct AuditLogView: View {
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(selectedDateFilter == .specific ? Color.teal : Color(.tertiarySystemGroupedBackground))
+                    .background(selectedDateFilter == .specific ? Color.brand : Color(.tertiarySystemGroupedBackground))
                     .foregroundStyle(selectedDateFilter == .specific ? .white : .secondary)
                     .clipShape(Capsule())
                 }
@@ -414,7 +408,7 @@ struct AuditLogView: View {
                             if selectedDateFilter != .all {
                                 Text(filterDateTitle)
                                     .font(.system(size: 11, weight: .medium))
-                                    .foregroundStyle(Color.teal)
+                                    .foregroundStyle(Color.brand)
                             }
                         }
                     }
@@ -443,7 +437,7 @@ struct AuditLogView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.system(size: 17))
-                        .foregroundStyle(Color.teal)
+                        .foregroundStyle(Color.brand)
                 }
             }
         }
@@ -464,7 +458,7 @@ struct AuditLogView: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color.teal)
+                            .background(Color.brand)
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
                     .padding(.horizontal, 16)
@@ -547,13 +541,13 @@ private struct AuditRow: View {
         } else if msg.contains("hatırlatıcı") {
             return ("bell.badge.fill", Color.severityColor(.watch))
         } else if msg.contains("görev") {
-            return ("checklist", Color.teal)
+            return ("checklist", Color.brand)
         } else if msg.contains("biyometrik") || msg.contains("kilit") {
             return ("lock.shield.fill", Color.purple)
         } else if msg.contains("ekip") || msg.contains("katıldı") || msg.contains("kod") {
-            return ("person.2.badge.key.fill", Color.blue)
+            return ("person.2.badge.key.fill", Color.brand)
         } else if msg.contains("yeni hasta") || msg.contains("eklendi") {
-            return ("plus.circle.fill", Color.teal)
+            return ("plus.circle.fill", Color.brand)
         } else {
             return ("doc.text.fill", Color.secondary)
         }

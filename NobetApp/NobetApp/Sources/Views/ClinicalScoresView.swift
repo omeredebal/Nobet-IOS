@@ -49,6 +49,7 @@ struct ClinicalScoresView: View {
                      checked: $qsofa.systolicBP)
 
             ScoreResult(
+                title: "qSOFA",
                 score: qsofa.total,
                 max: 3,
                 severity: qsofa.total >= 2 ? .unstable : .stable,
@@ -75,6 +76,7 @@ struct ClinicalScoresView: View {
             CheckRow(label: "Yaş ≥ 65",                               checked: $curb65.age65)
 
             ScoreResult(
+                title: "CURB-65",
                 score: curb65.total,
                 max: 5,
                 severity: curb65.severity,
@@ -108,6 +110,7 @@ struct ClinicalScoresView: View {
                                 (2,"Ekstansiyon"), (1,"Yok")])
 
             ScoreResult(
+                title: "GKS (GCS)",
                 score: gcs.total,
                 max: 15,
                 severity: gcs.severity,
@@ -189,12 +192,12 @@ private struct CheckRow: View {
             haptic()
         } label: {
             HStack(alignment: .top, spacing: 10) {
-                Image(systemName: checked ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 20))
-                    .foregroundStyle(checked ? Color.teal : .secondary)
-                    .frame(width: 24)
+                Image(systemName: checked ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 19))
+                    .foregroundStyle(checked ? Color.brand : Color(.systemGray3))
+                    .frame(width: 22)
                 Text(label)
-                    .font(.system(size: 15))
+                    .font(.system(size: 14, weight: checked ? .semibold : .medium))
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
@@ -228,32 +231,57 @@ private struct GCSPicker: View {
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color(.separator).opacity(0.5), lineWidth: 0.5)
+                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
             )
         }
     }
 }
 
 private struct ScoreResult: View {
+    let title: String
     let score: Int
     let max: Int
     let severity: Severity
     let interpretation: String
+    @State private var copied = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text("\(score)")
-                    .font(AppFont.mono(36, weight: .bold))
-                    .foregroundStyle(Color.severityColor(severity))
+                    .font(AppFont.mono(34, weight: .bold))
+                    .foregroundStyle(Color.severityFG(severity))
 
                 Text("/ \(max)")
-                    .font(AppFont.mono(16, weight: .semibold))
+                    .font(AppFont.mono(15, weight: .semibold))
                     .foregroundStyle(.secondary)
 
                 Spacer()
 
                 SeverityPill(severity: severity, small: true)
+
+                Button {
+                    let text = "\(title): \(score)/\(max) (\(severity.label)) — \(interpretation)"
+                    UIPasteboard.general.string = text
+                    haptic()
+                    withAnimation { copied = true }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        withAnimation { copied = false }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: copied ? "checkmark" : "doc.on.doc")
+                        Text(copied ? "Kopyalandı" : "Kopyala")
+                    }
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.brand)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(Color(.systemBackground))
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.04), radius: 2)
+                }
+                .buttonStyle(.plain)
             }
 
             Text(interpretation)
@@ -267,7 +295,7 @@ private struct ScoreResult: View {
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.severityBorder(severity), lineWidth: 1)
+                .stroke(Color.severityBorder(severity), lineWidth: 0.5)
         )
         .animation(.spring(response: 0.28, dampingFraction: 0.8), value: score)
     }

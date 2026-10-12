@@ -38,14 +38,18 @@ struct PatientDetailView: View {
                     showDeleteAlert = true
                 } label: {
                     Label("Hastayı Devirden Çıkar / Taburcu Et", systemImage: "trash")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color.severityFG(.unstable))
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color.severityBG(.unstable).opacity(0.5))
+                        .padding(.vertical, 13)
+                        .background(Color.severityBG(.unstable))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.severityBorder(.unstable), lineWidth: 0.5)
+                        )
                 }
-                .padding(.top, 8)
+                .padding(.top, 6)
             }
             .padding(16)
             .padding(.bottom, 30)
@@ -81,7 +85,7 @@ struct PatientDetailView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .font(.system(size: 20))
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                     }
                 }
             }
@@ -105,23 +109,26 @@ struct PatientDetailView: View {
     private var Section_Overview: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
-                // Bed token
-                VStack(spacing: 2) {
-                    Text("YATAK")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(Color.severityColor(patient.severity).opacity(0.8))
-                        .kerning(0.5)
-                    Text(patient.bed)
-                        .font(AppFont.mono(22, weight: .bold))
-                        .foregroundStyle(Color.severityColor(patient.severity))
-                }
-                .frame(width: 58, height: 58)
-                .background(Color.severityBG(patient.severity))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(
+                // Sleek Bed token
+                ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.severityBorder(patient.severity), lineWidth: 1.5)
-                )
+                        .fill(Color.severityBG(patient.severity))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.severityBorder(patient.severity), lineWidth: 0.5)
+                        )
+
+                    VStack(spacing: 1) {
+                        Text("YATAK")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundStyle(Color.severityFG(patient.severity).opacity(0.75))
+                            .kerning(0.6)
+                        Text(patient.bed)
+                            .font(AppFont.mono(18, weight: .bold))
+                            .foregroundStyle(Color.severityFG(patient.severity))
+                    }
+                }
+                .frame(width: 52, height: 52)
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
@@ -146,10 +153,10 @@ struct PatientDetailView: View {
                     showEditSheet = true
                 } label: {
                     Image(systemName: "pencil")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(Color.teal)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.brand)
                         .padding(8)
-                        .background(Color(.tertiarySystemGroupedBackground))
+                        .background(Color.brand.opacity(0.08))
                         .clipShape(Circle())
                 }
             }
@@ -184,19 +191,23 @@ struct PatientDetailView: View {
             ZStack(alignment: .topLeading) {
                 if patient.summary.isEmpty {
                     Text("Klinik tablo, anamnez ve laboratuvar özetini buraya girin...")
-                        .font(.system(size: 15))
+                        .font(.system(size: 14))
                         .foregroundStyle(.tertiary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
                 }
                 TextEditor(text: $patient.summary)
                     .frame(minHeight: 90)
-                    .font(.system(size: 15))
+                    .font(.system(size: 14))
                     .scrollContentBackground(.hidden)
                     .padding(8)
             }
             .background(Color(.tertiarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
+            )
         }
         .padding(16)
         .card()
@@ -228,11 +239,11 @@ struct PatientDetailView: View {
             // Add task input bar
             HStack(spacing: 8) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 18))
-                    .foregroundStyle(Color.teal)
+                    .font(.system(size: 17))
+                    .foregroundStyle(Color.brand)
 
                 TextField("Yeni klinik görev ekle...", text: $newTaskText)
-                    .font(.system(size: 15))
+                    .font(.system(size: 14))
                     .submitLabel(.done)
                     .onSubmit(addTask)
 
@@ -240,14 +251,18 @@ struct PatientDetailView: View {
                     Button(action: addTask) {
                         Text("Ekle")
                             .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                     }
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
             .background(Color(.tertiarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
+            )
             .padding(.top, 4)
         }
         .padding(16)
@@ -274,24 +289,28 @@ struct PatientDetailView: View {
             ZStack(alignment: .topLeading) {
                 if patient.contingency.isEmpty {
                     Text("Klinik kötüleşme veya acil durumda ne yapılacak? İlave konsültasyon veya ilaç planını girin...")
-                        .font(.system(size: 15))
+                        .font(.system(size: 14))
                         .foregroundStyle(.tertiary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
                 }
                 TextEditor(text: $patient.contingency)
                     .frame(minHeight: 80)
-                    .font(.system(size: 15))
+                    .font(.system(size: 14))
                     .scrollContentBackground(.hidden)
                     .padding(8)
             }
             .background(Color(.tertiarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
+            )
 
             if patient.severity == .unstable && patient.contingency.trimmingCharacters(in: .whitespaces).isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 14))
+                        .font(.system(size: 13))
                     Text("Kararsız hasta için acil durum planı zorunludur.")
                         .font(.system(size: 12, weight: .bold))
                 }
@@ -300,6 +319,10 @@ struct PatientDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.severityBG(.unstable))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.severityBorder(.unstable), lineWidth: 0.5)
+                )
             }
         }
         .padding(16)
@@ -338,6 +361,10 @@ struct PatientDetailView: View {
                     .padding(.vertical, 10)
                     .background(Color(.tertiarySystemGroupedBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
+                    )
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -347,10 +374,10 @@ struct PatientDetailView: View {
                             } label: {
                                 Text(mins < 60 ? "+\(mins) dk" : "+\(mins/60) sa")
                                     .font(.system(size: 12, weight: .bold))
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 7)
-                                    .background(Color.teal.opacity(0.12))
-                                    .foregroundStyle(Color.teal)
+                                    .padding(.horizontal, 11)
+                                    .padding(.vertical, 6)
+                                    .background(Color.brand.opacity(0.10))
+                                    .foregroundStyle(Color.brand)
                                     .clipShape(Capsule())
                             }
                             .buttonStyle(.plain)
@@ -432,6 +459,8 @@ struct EditPatientSheet: View {
     @Environment(\.modelContext) private var ctx
     @Bindable var patient: Patient
 
+    @Query private var existingPatients: [Patient]
+
     @State private var bed: String = ""
     @State private var age: String = ""
     @State private var sex: Sex = .erkek
@@ -451,7 +480,12 @@ struct EditPatientSheet: View {
             hapticNotification(.error)
             return
         }
-        if containsPII(trimmedBed + trimmedProb) {
+        if existingPatients.contains(where: { $0.id != patient.id && $0.bed.uppercased() == trimmedBed }) {
+            errorMsg = "\(trimmedBed) numaralı yatakta zaten başka bir hasta kayıtlı."
+            hapticNotification(.error)
+            return
+        }
+        if containsPII(trimmedBed + trimmedProb + patient.summary) {
             errorMsg = "Metinde kimlik numarası benzeri ifade tespit edildi."
             hapticNotification(.error)
             return
@@ -525,13 +559,13 @@ private struct TaskRow: View {
     var body: some View {
         Button(action: onToggle) {
             HStack(alignment: .top, spacing: 10) {
-                Image(systemName: task.isDone ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 20))
-                    .foregroundStyle(task.isDone ? Color.teal : .secondary)
-                    .frame(width: 24)
+                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 19))
+                    .foregroundStyle(task.isDone ? Color.brand : Color(.systemGray3))
+                    .frame(width: 22)
 
                 Text(task.text)
-                    .font(.system(size: 15))
+                    .font(.system(size: 14, weight: task.isDone ? .regular : .medium))
                     .foregroundStyle(task.isDone ? .secondary : .primary)
                     .strikethrough(task.isDone)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -556,27 +590,27 @@ private struct TimerRow: View {
                 Text(timer.text)
                     .font(.system(size: 14, weight: .medium))
                 Text(timer.durationText(from: tick))
-                    .font(AppFont.mono(12))
-                    .foregroundStyle(timer.isLate ? Color.severityFG(.unstable) : Color.teal)
+                    .font(AppFont.mono(12, weight: .semibold))
+                    .foregroundStyle(timer.isLate ? Color.severityFG(.unstable) : Color.brand)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 6) {
                 Button("+30 dk", action: onSnooze)
-                    .font(.system(size: 12, weight: .semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
+                    .font(.system(size: 11, weight: .semibold))
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(Color(.separator).opacity(0.5), lineWidth: 0.5))
+                    .overlay(Capsule().stroke(Color(.separator).opacity(0.4), lineWidth: 0.5))
 
                 Button("Bitti", action: onDone)
-                    .font(.system(size: 12, weight: .semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
+                    .font(.system(size: 11, weight: .semibold))
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(Color(.separator).opacity(0.5), lineWidth: 0.5))
+                    .overlay(Capsule().stroke(Color(.separator).opacity(0.4), lineWidth: 0.5))
             }
             .buttonStyle(.plain)
         }

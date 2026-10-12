@@ -14,24 +14,24 @@ struct LoginView: View {
                 VStack(spacing: 24) {
                     // Hero Header
                     VStack(spacing: 16) {
-                        // Icon with glowing background
+                        // Icon with subtle medical glow
                         ZStack {
                             Circle()
-                                .fill(Color.teal.opacity(0.15))
-                                .frame(width: 88, height: 88)
+                                .fill(Color.brand.opacity(0.10))
+                                .frame(width: 80, height: 80)
 
                             Image(systemName: "cross.case.fill")
-                                .font(.system(size: 40))
-                                .foregroundStyle(Color.teal)
+                                .font(.system(size: 36))
+                                .foregroundStyle(Color.brand)
                         }
-                        .padding(.top, geo.safeAreaInsets.top + 24)
+                        .padding(.top, geo.safeAreaInsets.top + 20)
 
                         VStack(spacing: 6) {
                             Text("Nöbet Devir")
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                                .font(.system(size: 30, weight: .bold, design: .rounded))
                                 .foregroundStyle(.primary)
 
-                            Text("Acil & Yoğun Bakım Devir-Teslim")
+                            Text("Klinik Devir-Teslim & Nöbet Yönetimi")
                                 .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(.secondary)
                         }
@@ -42,7 +42,7 @@ struct LoginView: View {
                             FeaturePill(icon: "lock.slash.fill", text: "Sıfır PII")
                             FeaturePill(icon: "wifi.slash", text: "Çevrimdışı")
                         }
-                        .padding(.top, 4)
+                        .padding(.top, 2)
                     }
 
                     // Onboarding Login Card
@@ -60,19 +60,19 @@ struct LoginView: View {
 
                             HStack(spacing: 10) {
                                 Image(systemName: "person.text.rectangle.fill")
-                                    .foregroundStyle(Color.teal)
+                                    .foregroundStyle(Color.brand)
 
                                 TextField("Örn. Dr. Ömer", text: $email)
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.system(size: 15, weight: .medium))
                                     .autocorrectionDisabled()
                             }
                             .padding(.horizontal, 14)
-                            .padding(.vertical, 13)
+                            .padding(.vertical, 12)
                             .background(Color(.tertiarySystemGroupedBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .stroke(Color(.separator).opacity(0.3), lineWidth: 1)
+                                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
                             )
                         }
 
@@ -91,10 +91,10 @@ struct LoginView: View {
                                             role = r
                                         }
                                     } label: {
-                                        HStack(spacing: 6) {
+                                        HStack(spacing: 7) {
                                             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                                                .font(.system(size: 13))
-                                                .foregroundStyle(isSelected ? Color.teal : .secondary)
+                                                .font(.system(size: 13, weight: .medium))
+                                                .foregroundStyle(isSelected ? Color.brand : .secondary)
 
                                             Text(r.label)
                                                 .font(.system(size: 13, weight: isSelected ? .bold : .medium))
@@ -105,11 +105,11 @@ struct LoginView: View {
                                         .padding(.vertical, 10)
                                         .background(
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                .fill(isSelected ? Color.teal.opacity(0.14) : Color(.tertiarySystemGroupedBackground))
+                                                .fill(isSelected ? Color.brand.opacity(0.10) : Color(.tertiarySystemGroupedBackground))
                                         )
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                .stroke(isSelected ? Color.teal.opacity(0.6) : Color.clear, lineWidth: 1)
+                                                .stroke(isSelected ? Color.brand.opacity(0.5) : Color.clear, lineWidth: 0.5)
                                         )
                                     }
                                     .buttonStyle(.plain)
@@ -131,17 +131,11 @@ struct LoginView: View {
                                     .font(.system(size: 14, weight: .bold))
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color.teal, Color.teal.opacity(0.85)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .padding(.vertical, 14)
+                            .background(Color.brand)
                             .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                            .shadow(color: Color.teal.opacity(0.35), radius: 8, y: 4)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .shadow(color: Color.brand.opacity(0.25), radius: 8, y: 3)
                         }
                         .padding(.top, 4)
 
@@ -156,7 +150,7 @@ struct LoginView: View {
                                 Text("Davet Kodu ile Ekibe Katıl")
                                     .font(.system(size: 14, weight: .semibold))
                             }
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(Color.brand)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 6)
                         }

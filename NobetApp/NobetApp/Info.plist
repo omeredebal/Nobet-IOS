@@ -20,6 +20,17 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.omeredebal.nobetapp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nobet</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSLocalNotificationsUsageDescription</key>
 	<string>Hasta hatırlatıcıları için bildirim izni gerekir.</string>
 	<key>UIApplicationSceneManifest</key>

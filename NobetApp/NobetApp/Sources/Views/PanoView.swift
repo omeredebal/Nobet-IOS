@@ -47,44 +47,31 @@ struct PanoView: View {
                             .padding(.horizontal, 16)
                     }
 
-                    // Summary status cards (Interactive)
-                    HStack(spacing: 10) {
-                        Button {
-                            haptic(.selection)
-                            withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                                filterSeverity = (filterSeverity == .unstable) ? nil : .unstable
-                            }
-                        } label: {
-                            SummaryCell(count: unstable, label: "Kararsız", severity: .unstable, isSelected: filterSeverity == .unstable)
-                        }
-                        .buttonStyle(.plain)
+                    // Unified Clinical Triage Status Dashboard
+                    triageStatusCard
 
-                        Button {
-                            haptic(.selection)
-                            withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                                filterSeverity = (filterSeverity == .watch) ? nil : .watch
+                    if let filter = filterSeverity {
+                        HStack {
+                            HStack(spacing: 6) {
+                                Circle()
+                                    .fill(Color.severityColor(filter))
+                                    .frame(width: 6, height: 6)
+                                Text("Filtrelenen: \(filter.label)")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(Color.severityColor(filter))
                             }
-                        } label: {
-                            SummaryCell(count: watch, label: "İzlemde", severity: .watch, isSelected: filterSeverity == .watch)
-                        }
-                        .buttonStyle(.plain)
-
-                        Button {
-                            haptic(.selection)
-                            withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                                filterSeverity = (filterSeverity == .stable) ? nil : .stable
+                            Spacer()
+                            Button("Tümünü Göster") {
+                                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                    filterSeverity = nil
+                                }
                             }
-                        } label: {
-                            SummaryCell(count: stable, label: "Stabil", severity: .stable, isSelected: filterSeverity == .stable)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.brand)
                         }
-                        .buttonStyle(.plain)
+                        .padding(.horizontal, 18)
+                        .padding(.top, -6)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 4)
-
-                    // Filter chips row
-                    filterChipsRow
-                        .padding(.horizontal, 16)
 
                     // Patient list
                     if filteredPatients.isEmpty {
@@ -136,6 +123,9 @@ struct PanoView: View {
                                     Divider()
 
                                     Button(role: .destructive) {
+                                        for timer in patient.timers {
+                                            NotificationManager.shared.cancel(notificationID: timer.notificationID)
+                                        }
                                         ctx.delete(patient)
                                         ctx.insert(AuditEntry(message: "\(patient.bed) kartı silindi"))
                                         hapticNotification(.success)
@@ -188,6 +178,9 @@ struct PanoView: View {
             .sheet(isPresented: $s.showPrepareSheet) {
                 PrepareHandoverView()
             }
+            .sheet(isPresented: $s.showReceiveSheet) {
+                ReceiveHandoverView()
+            }
         }
     }
 
@@ -200,16 +193,28 @@ struct PanoView: View {
                 .foregroundStyle(store.handover.status == .sent ? .orange : Color.severityFG(.stable))
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(store.handover.status == .sent ? "Devir Gönderildi" : "Devir Tamamlandı")
+                Text(store.handover.status == .sent ? "Devir Bekliyor" : "Devir Tamamlandı")
                     .font(.system(size: 14, weight: .bold))
-                Text(store.handover.status == .sent ? "\(store.handover.toName) hekimin devralma onayı bekleniyor." : "\(store.handover.toName) devraldı (\(store.handover.ackTime ?? ""))")
+                Text(store.handover.status == .sent ? "\(store.handover.toName) hekimin devralması bekleniyor." : "\(store.handover.toName) devraldı (\(store.handover.ackTime ?? ""))")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
-            Button("Görüntüle") {
+            if store.handover.status == .sent {
+                Button("Devral") {
+                    store.showReceiveSheet = true
+                }
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.teal)
+                .foregroundStyle(.white)
+                .clipShape(Capsule())
+            }
+
+            Button("Özet") {
                 store.showPrepareSheet = true
             }
             .font(.system(size: 12, weight: .bold))
@@ -228,62 +233,52 @@ struct PanoView: View {
         )
     }
 
-    private var filterChipsRow: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    FilterChip(title: "Tümü (\(allPatients.count))", isSelected: filterSeverity == nil) {
-                        haptic(.selection)
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                            filterSeverity = nil
-                            proxy.scrollTo("all", anchor: .center)
-                        }
-                    }
-                    .id("all")
-
-                    FilterChip(title: "Kararsız (\(unstable))", isSelected: filterSeverity == .unstable, color: Color.severityFG(.unstable)) {
-                        haptic(.selection)
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                            filterSeverity = .unstable
-                            proxy.scrollTo("unstable", anchor: .center)
-                        }
-                    }
-                    .id("unstable")
-
-                    FilterChip(title: "İzlemde (\(watch))", isSelected: filterSeverity == .watch, color: Color.severityFG(.watch)) {
-                        haptic(.selection)
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                            filterSeverity = .watch
-                            proxy.scrollTo("watch", anchor: .center)
-                        }
-                    }
-                    .id("watch")
-
-                    FilterChip(title: "Stabil (\(stable))", isSelected: filterSeverity == .stable, color: Color.severityFG(.stable)) {
-                        haptic(.selection)
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                            filterSeverity = .stable
-                            proxy.scrollTo("stable", anchor: .center)
-                        }
-                    }
-                    .id("stable")
-                }
-                .padding(.horizontal, 2)
-            }
-            .onChange(of: filterSeverity) { _, newSeverity in
-                withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
-                    if let s = newSeverity {
-                        switch s {
-                        case .unstable: proxy.scrollTo("unstable", anchor: .center)
-                        case .watch:    proxy.scrollTo("watch", anchor: .center)
-                        case .stable:   proxy.scrollTo("stable", anchor: .center)
-                        }
-                    } else {
-                        proxy.scrollTo("all", anchor: .center)
-                    }
-                }
-            }
+    private var triageStatusCard: some View {
+        HStack(spacing: 0) {
+            triageSegment(count: unstable, label: "Kararsız", severity: .unstable)
+            Divider().frame(height: 28).opacity(0.3)
+            triageSegment(count: watch, label: "İzlemde", severity: .watch)
+            Divider().frame(height: 28).opacity(0.3)
+            triageSegment(count: stable, label: "Stabil", severity: .stable)
         }
+        .padding(.vertical, 4)
+        .card()
+        .padding(.horizontal, 16)
+        .padding(.top, 2)
+    }
+
+    private func triageSegment(count: Int, label: String, severity: Severity) -> some View {
+        let isSelected = (filterSeverity == severity)
+        return Button {
+            haptic(.selection)
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                filterSeverity = (filterSeverity == severity) ? nil : severity
+            }
+        } label: {
+            VStack(spacing: 3) {
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(Color.severityColor(severity))
+                        .frame(width: 6, height: 6)
+
+                    Text("\(count)")
+                        .font(AppFont.mono(20, weight: .bold))
+                        .foregroundStyle(Color.severityColor(severity))
+                }
+
+                Text(label)
+                    .font(.system(size: 11, weight: isSelected ? .bold : .medium))
+                    .foregroundStyle(isSelected ? Color.severityColor(severity) : .secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(isSelected ? Color.severityBG(severity) : Color.clear)
+            )
+            .padding(.horizontal, 4)
+        }
+        .buttonStyle(.plain)
     }
 
     private var emptyState: some View {
@@ -328,11 +323,11 @@ struct PanoView: View {
 
     private var onlineBadge: some View {
         HStack(spacing: 5) {
-            Circle()
-                .fill(Color.teal)
-                .frame(width: 7, height: 7)
+            Image(systemName: "shield.lefthalf.filled")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(Color.teal)
 
-            Text("Çevrimdışı")
+            Text("Yerel · Çevrimdışı")
                 .font(.system(size: 11, weight: .bold))
                 .foregroundStyle(Color.teal)
         }
@@ -361,24 +356,46 @@ struct PanoView: View {
                     )
             }
 
-            Button {
-                haptic(.medium)
-                store.showPrepareSheet = true
-            } label: {
-                Label("Devri Hazırla", systemImage: "arrow.right.doc.on.clipboard.fill")
-                    .font(.system(size: 15, weight: .bold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(
-                        LinearGradient(
-                            colors: [Color.teal, Color.teal.opacity(0.85)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+            if store.handover.status == .sent {
+                Button {
+                    haptic(.medium)
+                    store.showReceiveSheet = true
+                } label: {
+                    Label("Nöbeti Devral", systemImage: "checkmark.seal.fill")
+                        .font(.system(size: 15, weight: .bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(
+                                colors: [Color.teal, Color.teal.opacity(0.85)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .shadow(color: Color.teal.opacity(0.35), radius: 6, y: 3)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .shadow(color: Color.teal.opacity(0.35), radius: 6, y: 3)
+                }
+            } else {
+                Button {
+                    haptic(.medium)
+                    store.showPrepareSheet = true
+                } label: {
+                    Label("Devri Hazırla", systemImage: "arrow.right.doc.on.clipboard.fill")
+                        .font(.system(size: 15, weight: .bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(
+                                colors: [Color.teal, Color.teal.opacity(0.85)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .shadow(color: Color.teal.opacity(0.35), radius: 6, y: 3)
+                }
             }
         }
         .padding(.horizontal, 16)

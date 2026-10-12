@@ -3,15 +3,16 @@ import SwiftUI
 // MARK: - Color System
 
 extension Color {
-    /// Adaptive brand teal: deep emerald-teal in light mode, vibrant cyan-mint in dark mode.
-    static let teal = Color("AccentColor")
+    /// Adaptive brand medical sapphire blue: deep clinical blue in light mode, luminous sapphire in dark mode.
+    static let brand = Color("AccentColor")
+    static let teal = brand
 
-    /// Clinical Severity Core Colors
+    /// Refined Clinical Severity Palette (Elegant, authoritative, non-jarring)
     static func severityColor(_ s: Severity) -> Color {
         switch s {
-        case .unstable: Color(red: 0.92, green: 0.26, blue: 0.22) // Vibrant Crimson Red
-        case .watch:    Color(red: 0.95, green: 0.55, blue: 0.10) // Warm Amber Orange
-        case .stable:   Color(red: 0.08, green: 0.68, blue: 0.44) // Crisp Medical Emerald
+        case .unstable: Color(red: 0.88, green: 0.16, blue: 0.28) // Crisp Crimson Rose
+        case .watch:    Color(red: 0.85, green: 0.46, blue: 0.05) // Warm Amber Ochre
+        case .stable:   Color(red: 0.05, green: 0.58, blue: 0.38) // Sage Mint Emerald
         }
     }
 
@@ -22,12 +23,12 @@ extension Color {
 
     /// Subtle Translucent Tint Background for Pills & Badges
     static func severityBG(_ s: Severity) -> Color {
-        severityColor(s).opacity(0.14)
+        severityColor(s).opacity(0.09)
     }
 
-    /// Subtle Border for Pills & Cards
+    /// Ultra-fine Border for Pills & Badges
     static func severityBorder(_ s: Severity) -> Color {
-        severityColor(s).opacity(0.32)
+        severityColor(s).opacity(0.22)
     }
 }
 
@@ -55,23 +56,19 @@ struct CardModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(scheme == .dark ? Color(.secondarySystemGroupedBackground) : Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .stroke(
-                        scheme == .dark
-                            ? Color.white.opacity(0.08)
-                            : Color.black.opacity(0.06),
-                        lineWidth: 1
+                        Color(uiColor: .separator).opacity(scheme == .dark ? 0.35 : 0.18),
+                        lineWidth: 0.5
                     )
             )
             .shadow(
-                color: scheme == .dark
-                    ? Color.clear
-                    : Color.black.opacity(0.04),
-                radius: 8,
+                color: scheme == .dark ? Color.clear : Color.black.opacity(0.03),
+                radius: 6,
                 x: 0,
-                y: 3
+                y: 2
             )
     }
 }
@@ -90,19 +87,19 @@ struct SeverityPill: View {
         HStack(spacing: small ? 4 : 5) {
             Circle()
                 .fill(Color.severityColor(severity))
-                .frame(width: small ? 6 : 7, height: small ? 6 : 7)
+                .frame(width: small ? 5 : 6, height: small ? 5 : 6)
 
             Text(severity.label)
-                .font(.system(size: small ? 11 : 12, weight: .bold))
+                .font(.system(size: small ? 11 : 12, weight: .semibold))
                 .foregroundStyle(Color.severityFG(severity))
         }
-        .padding(.horizontal, small ? 8 : 10)
-        .padding(.vertical, small ? 4 : 5)
+        .padding(.horizontal, small ? 7 : 9)
+        .padding(.vertical, small ? 3 : 4)
         .background(Color.severityBG(severity))
         .clipShape(Capsule())
         .overlay(
             Capsule()
-                .stroke(Color.severityBorder(severity), lineWidth: 1)
+                .stroke(Color.severityBorder(severity), lineWidth: 0.5)
         )
     }
 }
@@ -125,30 +122,30 @@ struct SeverityPicker: View {
         let isSelected = (selection == s)
         Button {
             haptic(.selection)
-            withAnimation(.spring(response: 0.28, dampingFraction: 0.75)) {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                 selection = s
             }
         } label: {
             HStack(spacing: 5) {
                 Circle()
                     .fill(Color.severityColor(s))
-                    .frame(width: 8, height: 8)
+                    .frame(width: 7, height: 7)
 
                 Text(s.label)
                     .font(.system(size: 13, weight: isSelected ? .bold : .medium))
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 11)
+            .padding(.vertical, 10)
             .foregroundStyle(isSelected ? Color.severityColor(s) : .secondary)
             .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(isSelected ? Color.severityBG(s) : Color(.tertiarySystemGroupedBackground))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .stroke(
-                        isSelected ? Color.severityColor(s).opacity(0.5) : Color.clear,
-                        lineWidth: 1.5
+                        isSelected ? Color.severityColor(s).opacity(0.4) : Color.clear,
+                        lineWidth: 1
                     )
             )
         }
@@ -163,7 +160,7 @@ struct EyebrowLabel: View {
     var body: some View {
         Text(text.uppercased())
             .font(.system(size: 11, weight: .bold))
-            .kerning(1.0)
+            .kerning(0.8)
             .foregroundStyle(.secondary)
     }
 }
@@ -176,29 +173,27 @@ struct IPASSHeader: View {
 
     private var letterColor: Color {
         switch letter {
-        case "I": return Color.red
-        case "P": return Color.teal
-        case "A": return Color.blue
-        case "S": return Color.orange
-        default:  return Color.teal
+        case "I": return Color(red: 0.88, green: 0.16, blue: 0.28)
+        case "P": return Color.brand
+        case "A": return Color(red: 0.20, green: 0.50, blue: 0.85)
+        case "S": return Color(red: 0.85, green: 0.46, blue: 0.05)
+        default:  return Color.brand
         }
     }
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             Text(letter)
-                .font(AppFont.mono(14, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(letterColor.gradient)
-                )
+                .font(AppFont.mono(12, weight: .bold))
+                .foregroundStyle(letterColor)
+                .frame(width: 22, height: 22)
+                .background(letterColor.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
 
             Text(title.uppercased())
-                .font(.system(size: 12, weight: .bold))
-                .kerning(0.8)
-                .foregroundStyle(.primary)
+                .font(.system(size: 11, weight: .bold))
+                .kerning(0.7)
+                .foregroundStyle(.secondary)
 
             Spacer()
         }

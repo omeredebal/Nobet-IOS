@@ -18,12 +18,20 @@ struct PrepareHandoverView: View {
         }
     }
 
+    @State private var showEmergencySendAlert = false
+
     private var missingContingency: Int {
         patients.filter { $0.severity == .unstable && $0.contingency.trimmingCharacters(in: .whitespaces).isEmpty }.count
     }
 
     private var canSend: Bool {
-        missingContingency == 0 && !store.handover.toName.isEmpty && store.handover.status == .draft
+        !store.handover.toName.trimmingCharacters(in: .whitespaces).isEmpty && store.handover.status == .draft
+    }
+
+    private func executeSend() {
+        store.handover.send(to: store.handover.toName)
+        ctx.insert(AuditEntry(message: "Devir gönderildi: \(store.handover.toName)"))
+        hapticNotification(.success)
     }
 
     var body: some View {
@@ -69,14 +77,19 @@ struct PrepareHandoverView: View {
                     if missingContingency > 0 {
                         HStack(spacing: 8) {
                             Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 13))
                             Text("\(missingContingency) kararsız hasta için \"olası durumlar\" alanı boş.")
+                                .font(.system(size: 13, weight: .bold))
                         }
-                        .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(Color.severityFG(.unstable))
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.severityBG(.unstable))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.severityBorder(.unstable), lineWidth: 0.5)
+                        )
                     }
 
                     // Patient summaries header
@@ -89,7 +102,7 @@ struct PrepareHandoverView: View {
                         } label: {
                             Label("Raporu Kopyala", systemImage: "doc.on.doc")
                                 .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(Color.teal)
+                                .foregroundStyle(Color.brand)
                         }
                     }
 
@@ -108,10 +121,25 @@ struct PrepareHandoverView: View {
                     Button("Kapat") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    ShareLink(item: generateReportText()) {
+                    Menu {
+                        ShareLink(item: generateReportText()) {
+                            Label("Rapor Metnini Paylaş", systemImage: "doc.text")
+                        }
+                        ShareLink(item: store.exportHandoverJSON(ctx: ctx)) {
+                            Label("Devir Verisini Paylaş (JSON)", systemImage: "arrow.triangle.2.circlepath")
+                        }
+                    } label: {
                         Label("Paylaş", systemImage: "square.and.arrow.up")
                     }
                 }
+            }
+            .alert("Eksik Eylem Planı Uyarısı", isPresented: $showEmergencySendAlert) {
+                Button("Acil Devir Yap", role: .destructive) {
+                    executeSend()
+                }
+                Button("Vazgeç", role: .cancel) {}
+            } message: {
+                Text("\(missingContingency) adet kararsız hastanın olası durum planı henüz girilmedi. Devri yine de göndermek istiyor musunuz?")
             }
             .overlay(alignment: .bottom) {
                 sendButton
@@ -163,15 +191,19 @@ struct PrepareHandoverView: View {
                 EmptyView()
             case .sent:
                 HStack(spacing: 8) {
-                    ProgressView().tint(.orange)
+                    ProgressView().tint(Color.severityFG(.watch))
                     Text("Devir gönderildi. \(store.handover.toName) devralma onayı bekleniyor.")
-                        .font(.system(size: 13))
-                        .foregroundStyle(.orange)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.severityFG(.watch))
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.orange.opacity(0.1))
+                .background(Color.severityBG(.watch))
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.severityBorder(.watch), lineWidth: 0.5)
+                )
             case .acknowledged:
                 Label("\(store.handover.toName) devri devraldı · \(store.handover.ackTime ?? "")", systemImage: "checkmark.seal.fill")
                     .font(.system(size: 13, weight: .semibold))
@@ -180,6 +212,10 @@ struct PrepareHandoverView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.severityBG(.stable))
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.severityBorder(.stable), lineWidth: 0.5)
+                    )
             }
         }
     }
@@ -189,17 +225,20 @@ struct PrepareHandoverView: View {
             if store.handover.status == .draft {
                 Button {
                     guard canSend else { hapticNotification(.error); return }
-                    store.handover.send(to: store.handover.toName)
-                    ctx.insert(AuditEntry(message: "Devir gönderildi: \(store.handover.toName)"))
-                    hapticNotification(.success)
+                    if missingContingency > 0 {
+                        showEmergencySendAlert = true
+                    } else {
+                        executeSend()
+                    }
                 } label: {
                     Label("Devri gönder", systemImage: "paperplane.fill")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: 16, weight: .bold))
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .background(canSend ? Color.teal : Color(.systemFill))
+                        .padding(.vertical, 14)
+                        .background(canSend ? Color.brand : Color(.systemFill))
                         .foregroundStyle(canSend ? .white : .secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .shadow(color: canSend ? Color.brand.opacity(0.25) : .clear, radius: 8, y: 3)
                 }
                 .disabled(!canSend)
                 .padding(.horizontal, 16)
@@ -215,12 +254,13 @@ struct PrepareHandoverView: View {
                     store.showReceiveSheet = true
                 } label: {
                     Label("Devralan görünümünü aç", systemImage: "arrow.right.circle.fill")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: 16, weight: .bold))
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .background(Color.teal)
+                        .padding(.vertical, 14)
+                        .background(Color.brand)
                         .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .shadow(color: Color.brand.opacity(0.25), radius: 8, y: 3)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
@@ -251,12 +291,16 @@ private struct HandoverPatientCard: View {
             HStack(alignment: .center) {
                 HStack(spacing: 8) {
                     Text(patient.bed)
-                        .font(AppFont.mono(16, weight: .bold))
-                        .foregroundStyle(Color.severityColor(patient.severity))
-                        .padding(.horizontal, 8)
+                        .font(AppFont.mono(15, weight: .bold))
+                        .foregroundStyle(Color.severityFG(patient.severity))
+                        .padding(.horizontal, 9)
                         .padding(.vertical, 4)
                         .background(Color.severityBG(patient.severity))
-                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(Color.severityBorder(patient.severity), lineWidth: 0.5)
+                        )
 
                     Text("\(patient.age) Yaş · \(patient.sex == .erkek ? "Erkek" : "Kadın")")
                         .font(.system(size: 13, weight: .semibold))
@@ -295,6 +339,10 @@ private struct HandoverPatientCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.severityBG(.unstable))
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(Color.severityBorder(.unstable), lineWidth: 0.5)
+                )
             }
         }
         .padding(16)
@@ -305,7 +353,7 @@ private struct HandoverPatientCard: View {
         HStack(alignment: .top, spacing: 6) {
             Image(systemName: icon)
                 .font(.system(size: 11))
-                .foregroundStyle(isHighlight ? .orange : Color.teal)
+                .foregroundStyle(isHighlight ? Color.severityFG(.watch) : Color.brand)
                 .padding(.top, 3)
 
             Text(label + ":")
@@ -314,7 +362,7 @@ private struct HandoverPatientCard: View {
 
             Text(value)
                 .font(.system(size: 13))
-                .foregroundStyle(isHighlight ? .primary : .primary)
+                .foregroundStyle(.primary)
         }
     }
 }

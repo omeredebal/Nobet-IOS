@@ -193,11 +193,19 @@ final class AppStore {
             do {
                 let descriptor = FetchDescriptor<Patient>()
                 let patients = try ctx.fetch(descriptor)
+                var removedCount = 0
                 for p in patients {
-                    ctx.delete(p)
+                    // Yalnızca bu devir teslim anında mevcut olan hastaları temizle; yeni nöbette eklenenleri koru!
+                    if p.createdAt <= sentAt.addingTimeInterval(300) {
+                        for timer in p.timers {
+                            NotificationManager.shared.cancel(notificationID: timer.notificationID)
+                        }
+                        ctx.delete(p)
+                        removedCount += 1
+                    }
                 }
                 handover.reset()
-                ctx.insert(AuditEntry(message: "Otomatik silme: \(retentionHours) saatlik saklama süresi doldu, nöbet verileri temizlendi."))
+                ctx.insert(AuditEntry(message: "Otomatik saklama temizliği: \(retentionHours) saati dolan \(removedCount) devir kaydı temizlendi."))
                 try ctx.save()
             } catch {
                 print("Retention cleanup error: \(error)")
@@ -239,6 +247,7 @@ final class AppStore {
             ctx.insert(t1)
             ctx.insert(t2)
             ctx.insert(tm1)
+            NotificationManager.shared.schedule(timer: tm1, patientBed: p1.bed)
             patientsAdded += 1
         }
 
@@ -256,6 +265,7 @@ final class AppStore {
             ctx.insert(p2)
             ctx.insert(t3)
             ctx.insert(tm2)
+            NotificationManager.shared.schedule(timer: tm2, patientBed: p2.bed)
             patientsAdded += 1
         }
 
@@ -337,4 +347,156 @@ final class AppStore {
             try? ctx.save()
         }
     }
+
+    // MARK: - Handover JSON Transfer & Deep Link
+
+    func exportHandoverJSON(ctx: ModelContext) -> String {
+        let descriptor = FetchDescriptor<Patient>()
+        let patients = (try? ctx.fetch(descriptor)) ?? []
+
+        let pDTOs = patients.map { p in
+            HandoverExportDTO.PatientDTO(
+                bed: p.bed,
+                age: p.age,
+                sex: p.sex.rawValue,
+                problem: p.problem,
+                severity: p.severity.rawValue,
+                summary: p.summary,
+                contingency: p.contingency,
+                tasks: p.tasks.map { HandoverExportDTO.TaskDTO(text: $0.text, isDone: $0.isDone) },
+                timers: p.timers.map {
+                    let diff = max(0, Int($0.due.timeIntervalSinceNow / 60))
+                    return HandoverExportDTO.TimerDTO(text: $0.text, minutesRemaining: diff)
+                }
+            )
+        }
+
+        let dto = HandoverExportDTO(
+            teamName: teamName,
+            department: teamDepartment,
+            sender: userEmail.isEmpty ? "Dr. Hekim" : userEmail,
+            exportedAt: Date(),
+            patients: pDTOs
+        )
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        encoder.dateEncodingStrategy = .iso8601
+        if let data = try? encoder.encode(dto), let str = String(data: data, encoding: .utf8) {
+            return str
+        }
+        return ""
+    }
+
+    func importHandoverJSON(_ jsonString: String, ctx: ModelContext) -> (success: Bool, message: String) {
+        guard let data = jsonString.data(using: .utf8) else {
+            return (false, "Geçersiz veri formatı.")
+        }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let dto = try? decoder.decode(HandoverExportDTO.self, from: data) else {
+            return (false, "Devir dosyası çözümlenemedi. Biçim geçersiz.")
+        }
+
+        var importedCount = 0
+        let descriptor = FetchDescriptor<Patient>()
+        let existingPatients = (try? ctx.fetch(descriptor)) ?? []
+
+        for pDTO in dto.patients {
+            let bedKey = pDTO.bed.trimmingCharacters(in: .whitespaces).uppercased()
+            if let existing = existingPatients.first(where: { $0.bed.trimmingCharacters(in: .whitespaces).uppercased() == bedKey }) {
+                existing.problem = pDTO.problem
+                existing.severity = Severity(rawValue: pDTO.severity) ?? .stable
+                existing.summary = pDTO.summary
+                existing.contingency = pDTO.contingency
+                for tDTO in pDTO.tasks {
+                    if !existing.tasks.contains(where: { $0.text == tDTO.text }) {
+                        let t = PatientTask(text: tDTO.text)
+                        t.isDone = tDTO.isDone
+                        existing.tasks.append(t)
+                        ctx.insert(t)
+                    }
+                }
+                importedCount += 1
+            } else {
+                let p = Patient(bed: pDTO.bed, age: pDTO.age, sex: Sex(rawValue: pDTO.sex) ?? .erkek, problem: pDTO.problem, severity: Severity(rawValue: pDTO.severity) ?? .stable)
+                p.summary = pDTO.summary
+                p.contingency = pDTO.contingency
+                ctx.insert(p)
+                for tDTO in pDTO.tasks {
+                    let t = PatientTask(text: tDTO.text)
+                    t.isDone = tDTO.isDone
+                    p.tasks.append(t)
+                    ctx.insert(t)
+                }
+                for tmDTO in pDTO.timers {
+                    let due = Date().addingTimeInterval(Double(tmDTO.minutesRemaining) * 60)
+                    let tm = PatientTimer(text: tmDTO.text, due: due)
+                    p.timers.append(tm)
+                    ctx.insert(tm)
+                    NotificationManager.shared.schedule(timer: tm, patientBed: p.bed)
+                }
+                importedCount += 1
+            }
+        }
+
+        if !dto.teamName.isEmpty {
+            self.teamName = dto.teamName
+        }
+        if !dto.department.isEmpty {
+            self.teamDepartment = dto.department
+        }
+
+        ctx.insert(AuditEntry(message: "\(dto.sender) hekimden devir içe aktarıldı (\(importedCount) hasta)"))
+        try? ctx.save()
+        return (true, "\(importedCount) hasta ve görevleri başarıyla içe aktarıldı.")
+    }
+
+    func handleDeepLink(url: URL, ctx: ModelContext) {
+        guard url.scheme == "nobet" else { return }
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+        if components.host == "join" {
+            let code = components.queryItems?.first(where: { $0.name == "code" })?.value ?? ""
+            let team = components.queryItems?.first(where: { $0.name == "team" })?.value ?? ""
+            let dept = components.queryItems?.first(where: { $0.name == "dept" })?.value ?? ""
+            if !code.isEmpty {
+                _ = joinTeamWithCode(code: code, userName: userEmail, userRole: userRole, ctx: ctx)
+            }
+            if !team.isEmpty {
+                self.teamName = team
+            }
+            if !dept.isEmpty {
+                self.teamDepartment = dept
+            }
+        }
+    }
+}
+
+// MARK: - Handover Transfer DTO
+
+struct HandoverExportDTO: Codable {
+    struct TaskDTO: Codable {
+        let text: String
+        let isDone: Bool
+    }
+    struct TimerDTO: Codable {
+        let text: String
+        let minutesRemaining: Int
+    }
+    struct PatientDTO: Codable {
+        let bed: String
+        let age: Int
+        let sex: String
+        let problem: String
+        let severity: String
+        let summary: String
+        let contingency: String
+        let tasks: [TaskDTO]
+        let timers: [TimerDTO]
+    }
+    let teamName: String
+    let department: String
+    let sender: String
+    let exportedAt: Date
+    let patients: [PatientDTO]
 }
